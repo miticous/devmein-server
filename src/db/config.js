@@ -1,6 +1,4 @@
-import {
-  API_KEY, AUTH_DOMAIN, DATABASE_URL, PROJECT_ID,
-} from '../constants/firebase.config';
+import { API_KEY, AUTH_DOMAIN, DATABASE_URL, PROJECT_ID } from '../constants/firebase.config';
 
 export default {
   apiKey: API_KEY,
@@ -8,5 +6,5 @@ export default {
   databaseURL: DATABASE_URL,
   projectId: PROJECT_ID,
   storageBucket: '<BUCKET>.appspot.com',
-  messagingSenderId: '<SENDER_ID>',
+  messagingSenderId: '<SENDER_ID>'
 };

@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import fileUpload from 'express-fileupload';
 import XLSX from 'xlsx';
-import { addProducts, getAllProducts, getProductByBarCode } from '../services';
+import { addProducts, getAllProducts, getProductByBarCode } from '../services/index_old';
 import { ADD_PRODUCTS_FAILED } from '../../constants/errorMessages';
 
 const router = express.Router();
@@ -18,9 +18,9 @@ router.post('/products/upload/', async (req, res) => {
       throw new Error();
     }
     const workbook = XLSX.read(data, { type: 'buffer' });
-    const dataToJson = XLSX.utils.sheet_to_json(
-      workbook.Sheets[workbook.SheetNames[0]], { raw: true },
-    );
+    const dataToJson = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {
+      raw: true
+    });
 
     const isProductsAdded = await addProducts(dataToJson);
 

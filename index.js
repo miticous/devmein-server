@@ -1,10 +1,9 @@
 import express from 'express';
-import routes from './src/server/routes';
+import routes from './src/server/routes/index_old';
 
 const app = express();
 const PORT = 8080;
 const HOST = '0.0.0.0';
-
 
 app.use(routes);
 

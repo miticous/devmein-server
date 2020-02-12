@@ -1,12 +1,18 @@
 import firebase from '../../db';
 import {
-  BAR_CODE, DESCRIPTION, PRICE, DEFERRED_PRICE, CODE, ACTIVE_INGREDIENT, MANUFACTURER, UNIT,
+  BAR_CODE,
+  DESCRIPTION,
+  PRICE,
+  DEFERRED_PRICE,
+  CODE,
+  ACTIVE_INGREDIENT,
+  MANUFACTURER,
+  UNIT
 } from '../../constants/xlsFileColumns';
 import { MAXIMUM_POST_SIZE } from '../../constants/firebase.config';
-import {teste} from 'timers'
 
-const arrayToJsonObjectWithUid = ({ products }) => products
-  .reduce((obj, item) => {
+const arrayToJsonObjectWithUid = ({ products }) =>
+  products.reduce((obj, item) => {
     if (item[CODE]) {
       return {
         ...obj,
@@ -18,15 +24,14 @@ const arrayToJsonObjectWithUid = ({ products }) => products
           deferredPrice: item[DEFERRED_PRICE],
           activeIngredient: item[ACTIVE_INGREDIENT],
           manufacturer: item[MANUFACTURER],
-          unit: item[UNIT],
-        },
+          unit: item[UNIT]
+        }
       };
     }
     return { ...obj };
-  },
-  {});
+  }, {});
 
-export const addProducts = async (products) => {
+export const addProducts = async products => {
   for (let i = 0; i < Math.ceil(products.length / MAXIMUM_POST_SIZE); i += 1) {
     const indexToStartExtraction = i * MAXIMUM_POST_SIZE;
     const sizeOfExtraction = indexToStartExtraction + MAXIMUM_POST_SIZE;
@@ -41,18 +46,17 @@ export const addProducts = async (products) => {
   return true;
 };
 
-export const getAllProducts = () => new Promise(
-  (resolve) => {
-    firebase.ref('/products/').once('value', (snap) => resolve(snap.val()));
-  },
-);
+export const getAllProducts = () =>
+  new Promise(resolve => {
+    firebase.ref('/products/').once('value', snap => resolve(snap.val()));
+  });
 
-export const getProductByBarCode = (barCode) => new Promise(
-  (resolve, reject) => {
-    firebase.ref('products')
+export const getProductByBarCode = barCode =>
+  new Promise((resolve, reject) => {
+    firebase
+      .ref('products')
       .orderByChild('barCode')
       .equalTo(`${barCode}`)
-      .once('value', (snap) => resolve(snap.val()))
+      .once('value', snap => resolve(snap.val()))
       .catch(() => reject());
-  },
-);
+  });
