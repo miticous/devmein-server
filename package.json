@@ -10,11 +10,13 @@
   "author": "Murilo Medeiros",
   "license": "ISC",
   "dependencies": {
+    "apollo-server-express": "^2.10.0",
+    "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "express-fileupload": "^1.1.6",
-    "firebase": "^6.1.0",
-    "xlsx": "^0.15.5"
+    "graphql": "^14.6.0",
+    "graphql-tools": "^4.0.6",
+    "mongodb": "^3.5.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.4",
