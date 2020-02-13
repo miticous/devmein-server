@@ -6,6 +6,8 @@ import resolvers from './graphql/resolvers';
 import authMiddleware from './middlewares/authMiddleware';
 import { registerUser, login } from './services/user';
 
+require('./database');
+
 const start = async () => {
   const server = new ApolloServer({ typeDefs, resolvers });
 
