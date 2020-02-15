@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
@@ -15,10 +16,10 @@ export const registerUser = async args => {
   });
   const data = await user.save().catch(err => {
     if (err.errmsg) {
-      return { error: ERROR_MESSAGES.USER_ALREADY_EXISTS };
+      throw ERROR_MESSAGES.USER_ALREADY_EXISTS;
     }
     if (err.message) {
-      return { error: ERROR_MESSAGES.INVALID_DATA_FIELDS };
+      throw ERROR_MESSAGES.INVALID_DATA_FIELDS;
     }
     return err;
   });
@@ -30,12 +31,55 @@ export const login = async args => {
   const user = await User.findOne({ email: args.email });
 
   if (!user) {
-    return { error: ERROR_MESSAGES.INVALID_EMAIL_OR_PASSWORD };
+    throw ERROR_MESSAGES.INVALID_EMAIL_OR_PASSWORD;
   }
   const isValidPassword = await bcrypt.compare(args.password, user.password);
 
   if (!isValidPassword) {
-    return { error: ERROR_MESSAGES.INVALID_EMAIL_OR_PASSWORD };
+    throw ERROR_MESSAGES.INVALID_EMAIL_OR_PASSWORD;
   }
-  return user;
+
+  const updatedUser = await User.findByIdAndUpdate(
+    user._id,
+    {
+      token: jwt.sign({ _id: user._id }, process.env.JWT_KEY)
+    },
+    { new: true }
+  );
+
+  return updatedUser;
+};
+
+export const auth = async ({ userId, token }) => {
+  const user = await User.findOne({ _id: userId, token });
+
+  if (!user) {
+    throw ERROR_MESSAGES.AUTHENTICATION_FAILED;
+  }
+  return true;
+};
+
+export const logout = async token => {
+  if (!token) {
+    throw ERROR_MESSAGES.LOGOUT_FAILED;
+  }
+  const data = jwt.verify(token, process.env.JWT_KEY);
+
+  if (!data) {
+    throw ERROR_MESSAGES.LOGOUT_FAILED;
+  }
+  const user = await User.findByIdAndUpdate(
+    data._id,
+    {
+      token: null
+    },
+    {
+      new: true
+    }
+  );
+
+  if (!user) {
+    throw ERROR_MESSAGES.LOGOUT_FAILED;
+  }
+  return true;
 };

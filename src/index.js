@@ -4,7 +4,8 @@ import bodyParser from 'body-parser';
 import typeDefs from './graphql/typeDefs';
 import resolvers from './graphql/resolvers';
 import authMiddleware from './middlewares/authMiddleware';
-import { registerUser, login } from './services/user';
+import { registerUser, login, logout } from './services/user';
+import ERROR_MESSAGES from './constants/errorMessages';
 
 require('./database');
 
@@ -20,7 +21,7 @@ const start = async () => {
       const data = await registerUser(req.body);
       res.status(200).send(data);
     } catch (error) {
-      res.status(400).send(error);
+      res.status(400).send({ error });
     }
   });
 
@@ -29,7 +30,23 @@ const start = async () => {
       const data = await login(req.body);
       return res.status(200).send(data);
     } catch (error) {
-      return res.status(400).send(error);
+      return res.status(400).send({ error });
+    }
+  });
+
+  app.post('/users/logout', async (req, res) => {
+    try {
+      const authorization = req.headers.authorization;
+
+      if (!authorization) {
+        throw ERROR_MESSAGES.LOGOUT_FAILED;
+      }
+      const token = authorization.replace('Bearer ', '');
+
+      await logout(token);
+      return res.status(200).send();
+    } catch (error) {
+      return res.status(400).send({ error });
     }
   });
 

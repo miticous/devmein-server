@@ -1,20 +1,17 @@
+/* eslint-disable no-underscore-dangle */
 import jwt from 'jsonwebtoken';
-import ERROR_MESSAGES from '../constants/errorMessages';
-import { login } from '../services/user';
+import { auth } from '../services/user';
 
 export default async (req, res, next) => {
-  const token = req.header('Authorization').replace('Bearer ', '');
+  const authorization = req.header('Authorization');
+  const token = authorization ? authorization.replace('Bearer ', '') : null;
 
   try {
-    jwt.verify(token, process.env.JWT_KEY);
-  } catch (error) {
-    return res.status(400).send({ error: ERROR_MESSAGES.TOKEN_EXIRED_OR_INVALID });
-  }
+    const data = jwt.verify(token, process.env.JWT_KEY);
+    await auth({ userId: data._id, token });
 
-  try {
-    await login(req.body);
     return next();
   } catch (error) {
-    return res.status(400).send('NAO');
+    return res.status(401).send({ error });
   }
 };
