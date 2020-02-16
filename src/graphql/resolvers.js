@@ -1,8 +1,16 @@
+import { createProfile } from '../services/profile';
+
 const resolvers = {
   Query: {
-    // comments: async () => getAll('comments')
+    // uploads: (parent, args) => {}
   },
-  Mutation: {}
+  Mutation: {
+    createProfile: async (root, args, context) => {
+      const fileArgs = await args.file;
+
+      await createProfile({ authorization: context.authorization, ...args, ...fileArgs });
+    }
+  }
 };
 
 export default resolvers;

@@ -10,15 +10,19 @@
   "author": "Murilo Medeiros",
   "license": "ISC",
   "dependencies": {
+    "@types/jest": "^25.1.2",
     "apollo-server-express": "^2.10.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "env-cmd": "^10.1.0",
     "express": "^4.17.1",
+    "firebase-admin": "^8.9.2",
     "graphql": "^14.6.0",
     "graphql-tools": "^4.0.6",
     "jsonwebtoken": "^8.5.1",
+    "moment": "^2.24.0",
+    "moment-timezone": "^0.5.27",
     "mongodb": "^3.5.2",
     "mongoose": "^5.8.12",
     "validator": "^12.2.0"
@@ -27,6 +31,7 @@
     "@babel/cli": "^7.4.4",
     "@babel/core": "^7.4.5",
     "@babel/node": "^7.8.3",
+    "@babel/plugin-transform-runtime": "^7.8.3",
     "@babel/preset-env": "^7.4.5",
     "eslint": "^6.7.2",
     "eslint-config-airbnb": "^18.0.1",
@@ -38,7 +43,7 @@
     "eslint-plugin-react": "^7.17.0",
     "eslint-plugin-react-hooks": "^1.7.0",
     "eslint-plugin-react-native": "^3.2.1",
-    "jest": "^24.8.0",
+    "jest": "^25.1.0",
     "nodemon": "^2.0.2",
     "prettier": "^1.19.1"
   }

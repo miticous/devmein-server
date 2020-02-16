@@ -10,7 +10,13 @@ import ERROR_MESSAGES from './constants/errorMessages';
 require('./database');
 
 const start = async () => {
-  const server = new ApolloServer({ typeDefs, resolvers });
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    context: ({ req }) => ({
+      authorization: req.headers.authorization
+    })
+  });
 
   const app = express();
 
@@ -51,6 +57,23 @@ const start = async () => {
   });
 
   app.use('/graphql', authMiddleware);
+
+  // curl localhost:4000/graphql \
+  // -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZTQ0ZTNiZTM2Nzc3MzYzZTQzNzE1NzciLCJpYXQiOjE1ODE3MjYwMDN9.t5jVOwhnPdI6HIVDB3E4O7j8u5w2m-qtOF7O4Xk7AII" \
+  // -F operations='{ "query": "mutation ($file: Upload!, $name: String, $birthday: String) { createProfile(file: $file, name: $name, birthday: $birthday) { name } }", "variables": { "file": null, "name": "Murilo Andrade Medeiros", "birthday": "07-03-1994 08:45" } }' \
+  // -F map='{ "0": ["variables.file"] }' \
+  // -F 0=@a.txt
+
+  // curl localhost:4000/graphql \
+  // -F operations='{ "query": "mutation ($file: Upload!) { singleUpload(file: $file) { filename } }", "variables": { "file": null } }' \
+  // -F map='{ "0": ["variables.file"] }' \
+  // -F 0=@a.txt
+
+  // curl localhost:4000/graphql \
+  // -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZTQ0ZTNiZTM2Nzc3MzYzZTQzNzE1NzciLCJpYXQiOjE1ODE3MjYwMDN9.t5jVOwhnPdI6HIVDB3E4O7j8u5w2m-qtOF7O4Xk7AII" \
+  // -F operations='{ "query": "mutation ($file: Upload!, $name: String, $birthday: String) { createProfile(file: $file, name: $name, birthday: $birthday) { name } }", "variables": { "file": null, "name": "Murilo Andrade Medeiros", "birthday": "07-03-1994 08:45" } }' \
+  // -F map='{ "0": ["variables.file"] }' \
+  // -F 0=@tattoo.jpg
 
   server.applyMiddleware({ app });
 

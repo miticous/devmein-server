@@ -2,21 +2,18 @@ import { gql } from 'apollo-server-express';
 
 export default gql`
   type Query {
-    comments: [Comment]
+    uploads: [File]
   }
-  type Comment {
-    _id: String
+  type File {
+    filename: String
+    mimetype: String
+    encoding: String
+  }
+  type Profile {
     name: String
-    email: String
-    text: String
-  }
-  type User {
-    _id: String
-    email_verified: Boolean
-    email: String
-    password: String
+    birthday: String
   }
   type Mutation {
-    signup(email: String, password: String): User
+    createProfile(name: String, birthday: String, file: Upload!): Profile
   }
 `;
