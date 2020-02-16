@@ -2,27 +2,19 @@
 import jwt from 'jsonwebtoken';
 import { ApolloError } from 'apollo-server-express';
 import moment from 'moment';
-import { createWriteStream, unlinkSync } from 'fs';
+import { unlinkSync, writeFileSync } from 'fs';
 import path from 'path';
 import Profile from '../models/Profile';
 import bucket from '../storage';
 import ERROR_MESSAGES from '../constants/errorMessages';
 
-const uploadProfileImages = async args => {
-  const { createReadStream, filename } = args;
+const uploadProfileImages = async (file, filename) => {
   const tempPath = path.join(__dirname, './', filename);
 
-  await new Promise(res =>
-    createReadStream()
-      .pipe(createWriteStream(tempPath))
-      .on('error', () => {
-        throw new ApolloError(ERROR_MESSAGES.TEMP_IMAGE_SAVE_FAILED);
-      })
-      .on('close', res)
-  );
-
+  await writeFileSync(tempPath, file, 'base64', () => {
+    throw new ApolloError(ERROR_MESSAGES.TEMP_IMAGE_SAVE_FAILED);
+  });
   await bucket.upload(tempPath);
-
   await unlinkSync(tempPath, err => {
     if (err) {
       throw new ApolloError(ERROR_MESSAGES.TEMP_IMAGE_DELETE_FAILED);
@@ -34,11 +26,11 @@ const uploadProfileImages = async args => {
 };
 
 export const createProfile = async args => {
-  const { authorization, name, birthday } = args;
+  const { authorization, name, birthday, file, filename } = args;
   const token = authorization.replace('Bearer ', '');
   const data = jwt.verify(token, process.env.JWT_KEY);
 
-  const imageUrl = await uploadProfileImages(args);
+  const imageUrl = await uploadProfileImages(file, filename);
 
   const profile = new Profile({
     _id: data._id,

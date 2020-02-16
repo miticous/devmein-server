@@ -6,9 +6,7 @@ const resolvers = {
   },
   Mutation: {
     createProfile: async (root, args, context) => {
-      const fileArgs = await args.file;
-
-      await createProfile({ authorization: context.authorization, ...args, ...fileArgs });
+      await createProfile({ authorization: context.authorization, ...args });
     }
   }
 };

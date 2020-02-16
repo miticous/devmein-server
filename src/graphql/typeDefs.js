@@ -14,6 +14,6 @@ export default gql`
     birthday: String
   }
   type Mutation {
-    createProfile(name: String, birthday: String, file: Upload!): Profile
+    createProfile(name: String, birthday: String, file: String, filename: String): Profile
   }
 `;

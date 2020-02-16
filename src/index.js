@@ -20,12 +20,12 @@ const start = async () => {
 
   const app = express();
 
-  app.use(bodyParser.json());
+  app.use(bodyParser.json({ limit: '20mb' }));
 
   app.post('/users', async (req, res) => {
     try {
-      const data = await registerUser(req.body);
-      res.status(200).send(data);
+      await registerUser(req.body);
+      res.status(200).send();
     } catch (error) {
       res.status(400).send({ error });
     }
@@ -36,7 +36,7 @@ const start = async () => {
       const data = await login(req.body);
       return res.status(200).send(data);
     } catch (error) {
-      return res.status(400).send({ error });
+      return res.status(401).send({ error });
     }
   });
 
