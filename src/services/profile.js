@@ -8,7 +8,7 @@ import Profile from '../models/Profile';
 import bucket from '../storage';
 import ERROR_MESSAGES from '../constants/errorMessages';
 
-const uploadProfileImages = async (file, filename) => {
+const uploadProfileImages = async ({ file, filename }) => {
   const tempPath = path.join(__dirname, './', filename);
 
   await writeFileSync(tempPath, file, 'base64', () => {
@@ -26,24 +26,27 @@ const uploadProfileImages = async (file, filename) => {
 };
 
 export const createProfile = async args => {
-  const { authorization, name, birthday, file, filename } = args;
+  const { authorization, name, birthday, file, fileExtension } = args;
   const token = authorization.replace('Bearer ', '');
-  const data = jwt.verify(token, process.env.JWT_KEY);
-
-  const imageUrl = await uploadProfileImages(file, filename);
-
-  const profile = new Profile({
-    _id: data._id,
-    name,
-    birthday: moment(new Date(birthday))
-      .subtract(3, 'hours')
-      .toString(),
-    images: [{ image: imageUrl }]
-  });
 
   try {
-    const user = await profile.save();
-    console.log(`✅ New user has been created with name ${user.name}`);
+    const { _id: userId } = jwt.verify(token, process.env.JWT_KEY);
+    const profile = new Profile({
+      _id: userId,
+      name,
+      birthday: moment(new Date(birthday))
+        .subtract(3, 'hours')
+        .toString(),
+      images: [{ image: '' }]
+    });
+    const { images } = await profile.save();
+    const imageId = images[0]._id;
+    const filename = `${userId}.${imageId}.${fileExtension || 'png'}`;
+    const imageUrl = await uploadProfileImages({ file, filename });
+
+    await profile.addProfileImage(imageUrl);
+    console.log(`✅ New user has been created with name ${profile.name}`);
+    return profile;
   } catch (error) {
     if (error.toString().includes('E11000')) {
       throw new ApolloError(ERROR_MESSAGES.PROFILE_ALREADY_EXISTS);

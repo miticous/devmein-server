@@ -7,6 +7,7 @@ import ERROR_MESSAGES from '../constants/errorMessages';
 
 const authorizedUserAge = moment(Date.now(), 'America/Sao_Paulo')
   .subtract(AUTHORIZED_USER_AGE, 'year')
+  .add(1, 'day')
   .toString();
 
 const profileSchema = mongoose.Schema({
@@ -29,11 +30,18 @@ const profileSchema = mongoose.Schema({
     {
       image: {
         type: String,
-        required: true
+        required: false
       }
     }
   ]
 });
+
+profileSchema.methods.addProfileImage = async function(imageUrl) {
+  const image = this.images[0];
+
+  this.images = [{ _id: image._id, image: imageUrl }];
+  await this.save();
+};
 
 const Profile = mongoose.model('Profile', profileSchema);
 

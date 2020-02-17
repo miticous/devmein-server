@@ -1,6 +1,7 @@
 import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
 import bodyParser from 'body-parser';
+import jwt from 'jsonwebtoken';
 import typeDefs from './graphql/typeDefs';
 import resolvers from './graphql/resolvers';
 import authMiddleware from './middlewares/authMiddleware';
@@ -13,9 +14,16 @@ const start = async () => {
   const server = new ApolloServer({
     typeDefs,
     resolvers,
-    context: ({ req }) => ({
-      authorization: req.headers.authorization
-    })
+    context: ({ req }) => {
+      const authorization = req.headers.authorization;
+      const token = authorization.replace('Bearer ', '');
+      const { _id: userId } = jwt.verify(token, process.env.JWT_KEY);
+
+      return {
+        authorization: req.headers.authorization,
+        userId
+      };
+    }
   });
 
   const app = express();
