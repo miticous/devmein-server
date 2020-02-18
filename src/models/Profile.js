@@ -10,7 +10,7 @@ const authorizedUserAge = moment(Date.now(), 'America/Sao_Paulo')
   .add(1, 'day')
   .toString();
 
-const profileSchema = mongoose.Schema({
+export const profileSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   name: {
     type: String,

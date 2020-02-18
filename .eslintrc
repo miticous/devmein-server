@@ -36,7 +36,11 @@
     "react/jsx-props-no-spreading": 0,
     "react-native/no-unused-styles": 2,
     "react-native/no-color-literals": 2,
-    "react/jsx-curly-newline": "off"
+    "react/jsx-curly-newline": "off",
+    "no-underscore-dangle": [
+      "off"
+    ],
+    "func-names": ["error", "never"]
   },
   "env": {
     "jest": true

@@ -1,6 +1,7 @@
 import { createProfile } from '../services/profile';
 import User from '../models/User';
 import Profile from '../models/Profile';
+import { sendMessage } from '../services/chat';
 
 const resolvers = {
   Query: {
@@ -19,8 +20,11 @@ const resolvers = {
   Mutation: {
     createProfile: async (root, args, context) => {
       const profile = await createProfile({ authorization: context.authorization, ...args });
-
       return profile;
+    },
+    sendMessage: async (root, args, { userId }) => {
+      const chat = await sendMessage({ ...args, userId });
+      return chat;
     }
   }
 };
