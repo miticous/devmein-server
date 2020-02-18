@@ -28,6 +28,11 @@ const userSchema = mongoose.Schema({
   token: {
     type: String,
     required: true
+  },
+  hasProfile: {
+    type: Boolean,
+    required: true,
+    default: false
   }
 });
 

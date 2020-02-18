@@ -7,6 +7,7 @@ import path from 'path';
 import Profile from '../models/Profile';
 import bucket from '../storage';
 import ERROR_MESSAGES from '../constants/errorMessages';
+import User from '../models/User';
 
 const uploadProfileImages = async ({ file, filename }) => {
   const tempPath = path.join(__dirname, './', filename);
@@ -45,6 +46,9 @@ export const createProfile = async args => {
     const imageUrl = await uploadProfileImages({ file, filename });
 
     await profile.addProfileImage(imageUrl);
+    await User.findByIdAndUpdate(userId, {
+      hasProfile: true
+    });
     console.log(`✅ New user has been created with name ${profile.name}`);
     return profile;
   } catch (error) {

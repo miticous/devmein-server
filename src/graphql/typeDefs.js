@@ -4,6 +4,7 @@ export default gql`
   type Query {
     user: User
     profile: Profile
+    chat(targetUserId: String): Chat
   }
   type User {
     email: String

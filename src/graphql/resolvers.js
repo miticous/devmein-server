@@ -2,6 +2,7 @@ import { createProfile } from '../services/profile';
 import User from '../models/User';
 import Profile from '../models/Profile';
 import { sendMessage } from '../services/chat';
+import Chat from '../models/Chat';
 
 const resolvers = {
   Query: {
@@ -15,6 +16,12 @@ const resolvers = {
         return {};
       }
       return profile;
+    },
+    chat: async (root, args, { userId }) => {
+      const chat = await Chat.findOne({
+        $and: [{ 'participants._id': userId }, { 'participants._id': args.targetUserId }]
+      });
+      return chat;
     }
   },
   Mutation: {
