@@ -6,7 +6,8 @@ export const chatSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   startedAt: {
     type: Date,
-    required: false
+    required: false,
+    default: () => getServerDate()
   },
   participants: [profileSchema],
   messages: [
@@ -21,7 +22,8 @@ export const chatSchema = mongoose.Schema({
       },
       sentAt: {
         type: Date,
-        required: true
+        required: true,
+        default: () => getServerDate()
       },
       text: {
         type: String,
@@ -39,9 +41,6 @@ export const chatSchema = mongoose.Schema({
 chatSchema.pre('save', function() {
   if (!this._id) {
     this._id = new mongoose.Types.ObjectId();
-  }
-  if (!this.startedAt) {
-    this.startedAt = getServerDate();
   }
   this.messages = this.messages.map((message, index) => {
     if (!this.messages[index]._id) {

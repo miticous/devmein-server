@@ -5,10 +5,11 @@ import moment from 'moment-timezone';
 import { AUTHORIZED_USER_AGE } from '../constants';
 import ERROR_MESSAGES from '../constants/errorMessages';
 
-const authorizedUserAge = moment(Date.now(), 'America/Sao_Paulo')
-  .subtract(AUTHORIZED_USER_AGE, 'year')
-  .add(1, 'day')
-  .toString();
+const authorizedUserAge = () =>
+  moment(Date.now(), 'America/Sao_Paulo')
+    .subtract(AUTHORIZED_USER_AGE, 'year')
+    .add(1, 'day')
+    .toString();
 
 export const profileSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
@@ -21,7 +22,7 @@ export const profileSchema = mongoose.Schema({
     type: Date,
     required: true,
     validate: value => {
-      if (validator.isAfter(value.toString(), authorizedUserAge)) {
+      if (validator.isAfter(value.toString(), authorizedUserAge())) {
         throw new Error(ERROR_MESSAGES.USER_AGE_NOT_AUTHORIZED);
       }
     }

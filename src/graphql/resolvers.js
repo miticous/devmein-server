@@ -40,8 +40,8 @@ const resolvers = {
       const profile = await createProfile({ authorization: context.authorization, ...args });
       return profile;
     },
-    sendMessage: async (root, args, { user: { _id } }) => {
-      const chat = await sendMessage({ ...args, _id });
+    sendMessage: async (root, { matchId, message }, { user: { _id } }) => {
+      const chat = await sendMessage({ matchId, senderId: _id, message });
 
       await pubsub.publish(UPDATE_CHAT, {
         updateChat: chat

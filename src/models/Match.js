@@ -1,16 +1,39 @@
 import mongoose from 'mongoose';
 import { profileSchema } from './Profile';
-import { chatSchema } from './Chat';
 import { getServerDate } from '../util';
 
 const matchSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   startedAt: {
     type: Date,
-    required: false
+    required: false,
+    default: () => getServerDate()
   },
   matches: [profileSchema],
-  chat: chatSchema
+  lastMessage: {
+    sender_id: {
+      type: String,
+      required: true
+    },
+    receiver_id: {
+      type: String,
+      required: true
+    },
+    sentAt: {
+      type: Date,
+      required: true,
+      default: () => getServerDate()
+    },
+    text: {
+      type: String,
+      required: true
+    },
+    viewed: {
+      type: Boolean,
+      required: true,
+      default: false
+    }
+  }
 });
 
 matchSchema.pre('save', function() {
@@ -20,9 +43,6 @@ matchSchema.pre('save', function() {
   if (!this._id) {
     const id = new mongoose.Types.ObjectId();
     this._id = id;
-  }
-  if (!this.startedAt) {
-    this.startedAt = getServerDate();
   }
 });
 

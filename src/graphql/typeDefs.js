@@ -38,11 +38,11 @@ export default gql`
     _id: String
     startedAt: String
     matches: [Profile]
-    chat: Chat
+    lastMessage: Message
   }
   type Mutation {
     createProfile(name: String, birthday: String, file: String, filename: String): Profile
-    sendMessage(targetUserId: String, message: String): Chat
+    sendMessage(matchId: String!, message: String!): Chat
     likeSomeone(userLikedId: String!): Match
   }
   type Subscription {
