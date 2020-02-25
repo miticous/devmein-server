@@ -17,30 +17,28 @@ const resolvers = {
     }
   },
   Query: {
-    user: async (root, args, context) => {
+    user: async (_, __, context) => {
       const { name, email } = await User.findById(context.userId);
       return { name, email };
     },
-    profile: async (root, args, { user: { _id } }) => {
+    profile: async (_, __, { user: { _id } }) => {
       const profile = await Profile.findById(_id);
       if (!profile) {
         return {};
       }
       return profile;
     },
-    chat: async (root, args, { user: { _id } }) => {
-      const chat = await Chat.findOne({
-        $and: [{ 'participants._id': _id }, { 'participants._id': args.targetUserId }]
-      });
+    chat: async (_, { matchId }, { user: { _id } }) => {
+      const chat = await Chat.findOne({ _id: matchId, 'participants._id': _id });
       return chat;
     }
   },
   Mutation: {
-    createProfile: async (root, args, context) => {
+    createProfile: async (_, args, context) => {
       const profile = await createProfile({ authorization: context.authorization, ...args });
       return profile;
     },
-    sendMessage: async (root, { matchId, message }, { user: { _id } }) => {
+    sendMessage: async (_, { matchId, message }, { user: { _id } }) => {
       const chat = await sendMessage({ matchId, senderId: _id, message });
 
       await pubsub.publish(UPDATE_CHAT, {
@@ -49,7 +47,7 @@ const resolvers = {
 
       return chat;
     },
-    likeSomeone: async (root, { userLikedId }, { user }) => {
+    likeSomeone: async (_, { userLikedId }, { user }) => {
       const match = await like({ userLikedId, user });
       return match;
     }
