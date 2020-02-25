@@ -5,6 +5,7 @@ import Profile from '../models/Profile';
 import { sendMessage } from '../services/chat';
 import Chat from '../models/Chat';
 import { like } from '../services/like';
+import Match from '../models/Match';
 
 const pubsub = new PubSub();
 
@@ -31,6 +32,10 @@ const resolvers = {
     chat: async (_, { matchId }, { user: { _id } }) => {
       const chat = await Chat.findOne({ _id: matchId, 'participants._id': _id });
       return chat;
+    },
+    matches: async (_, __, { user: { _id } }) => {
+      const matches = Match.find({ 'matches._id': _id });
+      return matches;
     }
   },
   Mutation: {

@@ -5,6 +5,7 @@ export default gql`
     user: User
     profile: Profile
     chat(matchId: String): Chat
+    matches: [Match]
   }
   type User {
     email: String
