@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { getServerDate } from '../util';
 import { profileSchema } from './Profile';
 
-const chatSchema = mongoose.Schema({
+export const chatSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   startedAt: {
     type: Date,

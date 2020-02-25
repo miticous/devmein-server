@@ -4,6 +4,7 @@ import User from '../models/User';
 import Profile from '../models/Profile';
 import { sendMessage } from '../services/chat';
 import Chat from '../models/Chat';
+import { like } from '../services/like';
 
 const pubsub = new PubSub();
 
@@ -20,16 +21,16 @@ const resolvers = {
       const { name, email } = await User.findById(context.userId);
       return { name, email };
     },
-    profile: async (root, args, { userId }) => {
-      const profile = await Profile.findById(userId);
+    profile: async (root, args, { user: { _id } }) => {
+      const profile = await Profile.findById(_id);
       if (!profile) {
         return {};
       }
       return profile;
     },
-    chat: async (root, args, { userId }) => {
+    chat: async (root, args, { user: { _id } }) => {
       const chat = await Chat.findOne({
-        $and: [{ 'participants._id': userId }, { 'participants._id': args.targetUserId }]
+        $and: [{ 'participants._id': _id }, { 'participants._id': args.targetUserId }]
       });
       return chat;
     }
@@ -39,14 +40,18 @@ const resolvers = {
       const profile = await createProfile({ authorization: context.authorization, ...args });
       return profile;
     },
-    sendMessage: async (root, args, { userId }) => {
-      const chat = await sendMessage({ ...args, userId });
+    sendMessage: async (root, args, { user: { _id } }) => {
+      const chat = await sendMessage({ ...args, _id });
 
       await pubsub.publish(UPDATE_CHAT, {
         updateChat: chat
       });
 
       return chat;
+    },
+    likeSomeone: async (root, { userLikedId }, { user }) => {
+      const match = await like({ userLikedId, user });
+      return match;
     }
   }
 };

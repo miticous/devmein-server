@@ -8,6 +8,7 @@ import resolvers from './graphql/resolvers';
 import authMiddleware from './middlewares/authMiddleware';
 import { registerUser, login, logout } from './services/user';
 import ERROR_MESSAGES from './constants/errorMessages';
+import User from './models/User';
 
 require('./database');
 
@@ -15,17 +16,21 @@ const start = async () => {
   const apolloServer = new ApolloServer({
     typeDefs,
     resolvers,
-    context: ({ req, connection }) => {
+    context: async ({ req, connection }) => {
       if (connection) {
         return connection.context;
       }
       const authorization = req.headers.authorization || '';
       const token = authorization.replace('Bearer ', '');
       const { _id: userId } = jwt.verify(token, process.env.JWT_KEY);
+      const user = await User.findById(userId);
 
+      if (!user) {
+        throw new Error('User not found');
+      }
       return {
         authorization: req.headers.authorization,
-        userId
+        user
       };
     }
   });
