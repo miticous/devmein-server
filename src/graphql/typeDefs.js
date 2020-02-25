@@ -38,4 +38,7 @@ export default gql`
     createProfile(name: String, birthday: String, file: String, filename: String): Profile
     sendMessage(targetUserId: String, message: String): Chat
   }
+  type Subscription {
+    updateChat: Chat
+  }
 `;

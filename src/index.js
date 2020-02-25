@@ -1,5 +1,6 @@
 import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
+import { createServer } from 'http';
 import bodyParser from 'body-parser';
 import jwt from 'jsonwebtoken';
 import typeDefs from './graphql/typeDefs';
@@ -11,11 +12,14 @@ import ERROR_MESSAGES from './constants/errorMessages';
 require('./database');
 
 const start = async () => {
-  const server = new ApolloServer({
+  const apolloServer = new ApolloServer({
     typeDefs,
     resolvers,
-    context: ({ req }) => {
-      const authorization = req.headers.authorization;
+    context: ({ req, connection }) => {
+      if (connection) {
+        return connection.context;
+      }
+      const authorization = req.headers.authorization || '';
       const token = authorization.replace('Bearer ', '');
       const { _id: userId } = jwt.verify(token, process.env.JWT_KEY);
 
@@ -83,11 +87,17 @@ const start = async () => {
   // -F map='{ "0": ["variables.file"] }' \
   // -F 0=@tattoo.jpg
 
-  server.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app });
 
-  app.listen({ port: 4000 }, () =>
-    console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
-  );
+  const httpServer = createServer(app);
+  apolloServer.installSubscriptionHandlers(httpServer);
+
+  httpServer.listen({ port: 4000 }, () => {
+    console.log(`🚀 Server ready at http://localhost:${4000}${apolloServer.graphqlPath}`);
+    console.log(
+      `🚀 Subscriptions ready at ws://localhost:${4000}${apolloServer.subscriptionsPath}`
+    );
+  });
 };
 
 start();

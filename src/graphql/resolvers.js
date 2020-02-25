@@ -1,10 +1,20 @@
+import { PubSub } from 'apollo-server-express';
 import { createProfile } from '../services/profile';
 import User from '../models/User';
 import Profile from '../models/Profile';
 import { sendMessage } from '../services/chat';
 import Chat from '../models/Chat';
 
+const pubsub = new PubSub();
+
+const UPDATE_CHAT = 'UPDATE_CHAT';
+
 const resolvers = {
+  Subscription: {
+    updateChat: {
+      subscribe: () => pubsub.asyncIterator([UPDATE_CHAT])
+    }
+  },
   Query: {
     user: async (root, args, context) => {
       const { name, email } = await User.findById(context.userId);
@@ -31,6 +41,11 @@ const resolvers = {
     },
     sendMessage: async (root, args, { userId }) => {
       const chat = await sendMessage({ ...args, userId });
+
+      await pubsub.publish(UPDATE_CHAT, {
+        updateChat: chat
+      });
+
       return chat;
     }
   }
