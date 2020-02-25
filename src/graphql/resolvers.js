@@ -29,12 +29,16 @@ const resolvers = {
       }
       return profile;
     },
+    home: async (_, __, { user: { _id } }) => {
+      const profiles = await Profile.find({ _id: { $ne: _id } });
+      return profiles;
+    },
     chat: async (_, { matchId }, { user: { _id } }) => {
       const chat = await Chat.findOne({ _id: matchId, 'participants._id': _id });
       return chat;
     },
     matches: async (_, __, { user: { _id } }) => {
-      const matches = Match.find({ 'matches._id': _id });
+      const matches = await Match.find({ 'matches._id': _id });
       return matches;
     }
   },

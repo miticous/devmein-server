@@ -13,11 +13,11 @@ const matchSchema = mongoose.Schema({
   lastMessage: {
     sender_id: {
       type: String,
-      required: true
+      required: false
     },
     receiver_id: {
       type: String,
-      required: true
+      required: false
     },
     sentAt: {
       type: Date,
@@ -26,11 +26,11 @@ const matchSchema = mongoose.Schema({
     },
     text: {
       type: String,
-      required: true
+      required: false
     },
     viewed: {
       type: Boolean,
-      required: true,
+      required: false,
       default: false
     }
   }
