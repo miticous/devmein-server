@@ -4,7 +4,7 @@ export default gql`
   type Query {
     user: User
     profile: Profile
-    home: [Profile]
+    home(maxDistance: String): [Profile]
     chat(matchId: String): Chat
     matches: [Match]
   }
@@ -46,6 +46,7 @@ export default gql`
     createProfile(name: String, birthday: String, file: String, filename: String): Profile
     sendMessage(matchId: String!, message: String!): Chat
     likeSomeone(userLikedId: String!): Match
+    sendGeoLocation(latitude: String!, longitude: String!): String
   }
   type Subscription {
     updateChat: Chat

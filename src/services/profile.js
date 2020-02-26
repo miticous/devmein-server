@@ -60,12 +60,39 @@ export const createProfile = async args => {
   }
 };
 
-export const getProfilesToHome = async ({ userId }) => {
+export const getProfilesToHome = async ({ userId, maxDistance }) => {
   const profilesIdsLikedByUser = await Like.findOne({ _id: userId }, { likes: 1, _id: 0 });
+  const {
+    loc: { coordinates }
+  } = await Profile.findOne({ _id: userId }, { loc: 1, _id: 0 });
 
   const profilesNotLikedByUser = await Profile.find({
-    _id: { $nin: [...profilesIdsLikedByUser.likes, userId] }
+    _id: { $nin: [...profilesIdsLikedByUser.likes, userId] },
+    loc: {
+      $near: {
+        $geometry: {
+          type: 'Point',
+          coordinates
+        },
+        $maxDistance: maxDistance || 100
+      }
+    }
   });
 
   return profilesNotLikedByUser;
+};
+
+export const updateProfileLocation = async ({ latitude, longitude, userId }) => {
+  const updatedProfile = await Profile.findOneAndUpdate(
+    { _id: userId },
+    {
+      loc: {
+        type: 'Point',
+        coordinates: [parseFloat(latitude), parseFloat(longitude)]
+      }
+    },
+    { new: true, upsert: true }
+  );
+
+  console.log(updatedProfile);
 };
