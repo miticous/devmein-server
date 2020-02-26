@@ -1,5 +1,5 @@
 import { PubSub } from 'apollo-server-express';
-import { createProfile } from '../services/profile';
+import { createProfile, getProfilesToHome } from '../services/profile';
 import User from '../models/User';
 import Profile from '../models/Profile';
 import { sendMessage } from '../services/chat';
@@ -30,7 +30,7 @@ const resolvers = {
       return profile;
     },
     home: async (_, __, { user: { _id } }) => {
-      const profiles = await Profile.find({ _id: { $ne: _id } });
+      const profiles = await getProfilesToHome({ userId: _id });
       return profiles;
     },
     chat: async (_, { matchId }, { user: { _id } }) => {

@@ -8,6 +8,7 @@ import Profile from '../models/Profile';
 import bucket from '../storage';
 import ERROR_MESSAGES from '../constants/errorMessages';
 import User from '../models/User';
+import Like from '../models/Like';
 
 const uploadProfileImages = async ({ file, filename }) => {
   const tempPath = path.join(__dirname, './', filename);
@@ -57,4 +58,14 @@ export const createProfile = async args => {
     }
     throw new ApolloError(error);
   }
+};
+
+export const getProfilesToHome = async ({ userId }) => {
+  const profilesIdsLikedByUser = await Like.findOne({ _id: userId }, { likes: 1, _id: 0 });
+
+  const profilesNotLikedByUser = await Profile.find({
+    _id: { $nin: [...profilesIdsLikedByUser.likes, userId] }
+  });
+
+  return profilesNotLikedByUser;
 };
