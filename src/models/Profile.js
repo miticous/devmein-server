@@ -43,7 +43,7 @@ export const profileSchema = mongoose.Schema({
   }
 });
 
-profileSchema.index({ loc: '2dsphere' });
+profileSchema.index({ loc: '2d' });
 
 profileSchema.methods.addProfileImage = async function(imageUrl) {
   const image = this.images[0];
