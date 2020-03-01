@@ -18,8 +18,8 @@ const resolvers = {
     }
   },
   Query: {
-    user: async (_, __, context) => {
-      const { name, email } = await User.findById(context.userId);
+    user: async (_, __, { user: { _id } }) => {
+      const { name, email } = await User.findById(_id);
       return { name, email };
     },
     profile: async (_, __, { user: { _id } }) => {

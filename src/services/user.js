@@ -56,7 +56,7 @@ export const auth = async ({ userId, token }) => {
   if (!user) {
     throw ERROR_MESSAGES.AUTHENTICATION_FAILED;
   }
-  return true;
+  return user.hasProfile;
 };
 
 export const logout = async token => {

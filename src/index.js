@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 import typeDefs from './graphql/typeDefs';
 import resolvers from './graphql/resolvers';
 import authMiddleware from './middlewares/authMiddleware';
-import { registerUser, login, logout } from './services/user';
+import { registerUser, login, logout, auth } from './services/user';
 import ERROR_MESSAGES from './constants/errorMessages';
 import User from './models/User';
 
@@ -70,6 +70,19 @@ const start = async () => {
       return res.status(200).send();
     } catch (error) {
       return res.status(400).send({ error });
+    }
+  });
+
+  app.get('/users/auth', async (req, res) => {
+    try {
+      const authorization = req.header('Authorization');
+      const token = authorization ? authorization.replace('Bearer ', '') : null;
+      const data = jwt.verify(token, process.env.JWT_KEY);
+      const hasProfile = await auth({ userId: data._id, token });
+
+      return res.status(200).send(hasProfile);
+    } catch (error) {
+      return res.status(401);
     }
   });
 

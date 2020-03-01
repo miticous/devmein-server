@@ -28,7 +28,8 @@ const uploadProfileImages = async ({ file, filename }) => {
 };
 
 export const createProfile = async args => {
-  const { authorization, name, birthday, file, fileExtension } = args;
+  const { authorization, name, birthday, file, fileExtension, input } = args;
+
   const token = authorization.replace('Bearer ', '');
 
   try {
@@ -39,7 +40,10 @@ export const createProfile = async args => {
       birthday: moment(new Date(birthday))
         .subtract(3, 'hours')
         .toString(),
-      images: [{ image: '' }]
+      images: [{ image: '' }],
+      birthplace: {
+        ...input
+      }
     });
     const { images } = await profile.save();
     const imageId = images[0]._id;
@@ -50,7 +54,7 @@ export const createProfile = async args => {
     await User.findByIdAndUpdate(userId, {
       hasProfile: true
     });
-    console.log(`✅ New user has been created with name ${profile.name}`);
+
     return profile;
   } catch (error) {
     if (error.toString().includes('E11000')) {
@@ -88,7 +92,7 @@ export const getProfilesToHome = async ({ userId, maxDistance }) => {
 };
 
 export const updateProfileLocation = async ({ latitude, longitude, userId }) => {
-  const updatedProfile = await Profile.findOneAndUpdate(
+  await Profile.findOneAndUpdate(
     { _id: userId },
     {
       loc: {
@@ -98,6 +102,4 @@ export const updateProfileLocation = async ({ latitude, longitude, userId }) => 
     },
     { new: true, upsert: true }
   );
-
-  console.log(updatedProfile);
 };
