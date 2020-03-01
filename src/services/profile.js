@@ -97,7 +97,7 @@ export const updateProfileLocation = async ({ latitude, longitude, userId }) => 
     {
       loc: {
         type: 'Point',
-        coordinates: [parseFloat(latitude), parseFloat(longitude)]
+        coordinates: [parseFloat(longitude), parseFloat(latitude)]
       }
     },
     { new: true, upsert: true }
