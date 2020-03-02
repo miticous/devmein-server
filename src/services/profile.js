@@ -71,21 +71,25 @@ export const getProfilesToHome = async ({ userId, maxDistance }) => {
   } = await Profile.findOne({ _id: userId }, { loc: 1, _id: 0 });
 
   const condition =
-    profilesIdsLikedByUser && profilesIdsLikedByUser.length > 0
-      ? [...profilesIdsLikedByUser.likes, userId]
+    profilesIdsLikedByUser && profilesIdsLikedByUser.likes.length > 0
+      ? [...profilesIdsLikedByUser.likes.map(like => like._id), userId]
       : [userId];
 
   const profiles = await Profile.find({
-    _id: { $nin: condition },
-    loc: {
-      $near: {
-        $geometry: {
-          type: 'Point',
-          coordinates
-        },
-        $maxDistance: maxDistance * 1110.12 || 100
+    $and: [
+      {
+        _id: { $nin: condition },
+        loc: {
+          $near: {
+            $geometry: {
+              type: 'Point',
+              coordinates
+            },
+            $maxDistance: maxDistance * 1110.12 || 100
+          }
+        }
       }
-    }
+    ]
   });
 
   return profiles;

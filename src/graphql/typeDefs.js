@@ -22,17 +22,22 @@ export default gql`
     _id: String
     image: String
   }
+  type Loc {
+    coordinates: [String]
+  }
   type Birthplace {
     placeId: String
     description: String
-    latitude: String
-    longitude: String
+    lat: String
+    lng: String
   }
   type Profile {
     _id: String
     name: String
     birthday: String
     images: [Images]
+    birthplace: Birthplace!
+    loc: Loc
   }
   type Message {
     _id: String
