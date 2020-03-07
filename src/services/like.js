@@ -15,12 +15,15 @@ export const like = async ({ userLikedId, user }) => {
   }
 
   await Like.findOneAndUpdate(
-    { _id: userLikedId },
-    { $addToSet: { likers: userLikerProfile } },
+    { _id: user._id },
+    { $addToSet: { likes: { _id: userLikedId } } },
     { new: true, upsert: true }
   );
 
-  const isUserLikerLiked = await Like.findOne({ _id: user._id, 'likers._id': userLikedId });
+  const isUserLikerLiked = await Like.findOne({
+    _id: userLikedProfile._id,
+    'likes._id': userLikerProfile._id
+  });
 
   if (!isUserLikerLiked) {
     return false;

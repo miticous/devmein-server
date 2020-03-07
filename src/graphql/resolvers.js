@@ -1,5 +1,5 @@
 import { PubSub } from 'apollo-server-express';
-import { createProfile } from '../services/profile';
+import { createProfile, getProfilesToHome, updateProfileLocation } from '../services/profile';
 import User from '../models/User';
 import Profile from '../models/Profile';
 import { sendMessage } from '../services/chat';
@@ -18,8 +18,8 @@ const resolvers = {
     }
   },
   Query: {
-    user: async (_, __, context) => {
-      const { name, email } = await User.findById(context.userId);
+    user: async (_, __, { user: { _id } }) => {
+      const { name, email } = await User.findById(_id);
       return { name, email };
     },
     profile: async (_, __, { user: { _id } }) => {
@@ -29,8 +29,8 @@ const resolvers = {
       }
       return profile;
     },
-    home: async (_, __, { user: { _id } }) => {
-      const profiles = await Profile.find({ _id: { $ne: _id } });
+    home: async (_, { maxDistance }, { user: { _id } }) => {
+      const profiles = await getProfilesToHome({ userId: _id, maxDistance });
       return profiles;
     },
     chat: async (_, { matchId }, { user: { _id } }) => {
@@ -59,6 +59,9 @@ const resolvers = {
     likeSomeone: async (_, { userLikedId }, { user }) => {
       const match = await like({ userLikedId, user });
       return match;
+    },
+    sendGeoLocation: async (_, args, { user: { _id } }) => {
+      await updateProfileLocation({ ...args, userId: _id });
     }
   }
 };

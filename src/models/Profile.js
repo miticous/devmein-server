@@ -34,8 +34,34 @@ export const profileSchema = mongoose.Schema({
         required: false
       }
     }
-  ]
+  ],
+  loc: {
+    type: {
+      type: String
+    },
+    coordinates: []
+  },
+  birthplace: {
+    placeId: {
+      type: String,
+      required: true
+    },
+    description: {
+      type: String,
+      required: true
+    },
+    lat: {
+      type: String,
+      required: true
+    },
+    lng: {
+      type: String,
+      required: true
+    }
+  }
 });
+
+profileSchema.index({ loc: '2dsphere' });
 
 profileSchema.methods.addProfileImage = async function(imageUrl) {
   const image = this.images[0];

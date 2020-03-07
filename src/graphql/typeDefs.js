@@ -1,10 +1,16 @@
 import { gql } from 'apollo-server-express';
 
 export default gql`
+  input BirthplaceInput {
+    placeId: String
+    description: String
+    lat: String
+    lng: String
+  }
   type Query {
     user: User
     profile: Profile
-    home: [Profile]
+    home(maxDistance: String): [Profile]
     chat(matchId: String): Chat
     matches: [Match]
   }
@@ -16,11 +22,22 @@ export default gql`
     _id: String
     image: String
   }
+  type Loc {
+    coordinates: [String]
+  }
+  type Birthplace {
+    placeId: String
+    description: String
+    lat: String
+    lng: String
+  }
   type Profile {
     _id: String
     name: String
     birthday: String
     images: [Images]
+    birthplace: Birthplace!
+    loc: Loc
   }
   type Message {
     _id: String
@@ -43,9 +60,16 @@ export default gql`
     lastMessage: Message
   }
   type Mutation {
-    createProfile(name: String, birthday: String, file: String, filename: String): Profile
+    createProfile(
+      name: String
+      birthday: String
+      file: String
+      filename: String
+      input: BirthplaceInput
+    ): Profile
     sendMessage(matchId: String!, message: String!): Chat
     likeSomeone(userLikedId: String!): Match
+    sendGeoLocation(latitude: String!, longitude: String!): String
   }
   type Subscription {
     updateChat: Chat
