@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "yarn run jest",
-    "start": "env-cmd -f ./.env nodemon --exec babel-node ./src/index.js",
-    "start-test": "env-cmd -f ./.env nodemon --exec babel-node ./src/index.js set NODE_ENV=test"
+    "start": "env-cmd -f ./.env nodemon --exec babel-node ./src/index.js"
   },
   "author": "Murilo Medeiros",
   "license": "ISC",

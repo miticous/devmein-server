@@ -119,4 +119,4 @@ if (process.env.NODE_ENV !== 'test') {
   });
 }
 
-export { typeDefs, resolvers, context, ApolloServer };
+export { typeDefs, resolvers, context, ApolloServer, app };
