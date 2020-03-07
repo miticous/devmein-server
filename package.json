@@ -4,15 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "start": "env-cmd -f ./.env nodemon --exec babel-node ./src/index.js "
+    "test": "yarn run jest",
+    "start": "env-cmd -f ./.env nodemon --exec babel-node ./src/index.js",
+    "start-test": "env-cmd -f ./.env nodemon --exec babel-node ./src/index.js set NODE_ENV=test"
   },
   "author": "Murilo Medeiros",
   "license": "ISC",
   "dependencies": {
     "@types/jest": "^25.1.2",
     "apollo-server-express": "^2.10.0",
+    "apollo-server-integration-testing": "^2.3.0",
     "apollo-server-testing": "^2.11.0",
+    "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
@@ -53,6 +56,8 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "setupFiles": ["dotenv/config"]
+    "setupFiles": [
+      "dotenv/config"
+    ]
   }
 }

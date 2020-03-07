@@ -6,7 +6,7 @@ import User from '../models/User';
 import ERROR_MESSAGES from '../constants/errorMessages';
 
 export const registerUser = async args => {
-  const encryptedPassword = await bcrypt.hash(args.password, 8);
+  const encryptedPassword = await bcrypt.hash(args.password.toString(), 8);
   const id = new mongoose.Types.ObjectId();
   const user = new User({
     _id: id,
@@ -14,6 +14,7 @@ export const registerUser = async args => {
     password: encryptedPassword,
     token: jwt.sign({ _id: id }, process.env.JWT_KEY)
   });
+
   const data = await user.save().catch(err => {
     if (err.errmsg) {
       throw ERROR_MESSAGES.USER_ALREADY_EXISTS;
@@ -33,7 +34,7 @@ export const login = async args => {
   if (!user) {
     throw ERROR_MESSAGES.INVALID_EMAIL_OR_PASSWORD;
   }
-  const isValidPassword = await bcrypt.compare(args.password, user.password);
+  const isValidPassword = await bcrypt.compare(args.password.toString(), user.password.toString());
 
   if (!isValidPassword) {
     throw ERROR_MESSAGES.INVALID_EMAIL_OR_PASSWORD;
@@ -47,7 +48,9 @@ export const login = async args => {
     { new: true }
   );
 
-  return updatedUser;
+  const { hasProfile, _id, name, email, token } = updatedUser;
+
+  return { _id, name, email, token, hasProfile };
 };
 
 export const auth = async ({ userId, token }) => {

@@ -16,22 +16,6 @@ const context = async ({ req, connection }) => {
   if (connection) {
     return connection.context;
   }
-  if (process.env.NODE_ENV === 'test') {
-    const { _id: userId } = jwt.verify(
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZTVjNTVmMTgzNzM5OTE5YTI3ZGNkNTYiLCJpYXQiOjE1ODMxMDk2Mjh9.WOhyz1XfTmQT-P4_6NCWrrSpiWn6EqaLmAKyHKHXbVU',
-      process.env.JWT_KEY
-    );
-    const user = await User.findById(userId);
-
-    if (!user) {
-      throw new Error('User not found');
-    }
-    return {
-      authorization:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZTVjNTVmMTgzNzM5OTE5YTI3ZGNkNTYiLCJpYXQiOjE1ODMxMDk2Mjh9.WOhyz1XfTmQT-P4_6NCWrrSpiWn6EqaLmAKyHKHXbVU',
-      user
-    };
-  }
   const authorization = req.headers.authorization || '';
   const token = authorization.replace('Bearer ', '');
   const { _id: userId } = jwt.verify(token, process.env.JWT_KEY);
