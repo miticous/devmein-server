@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Creating random user and profile 1`] = `
+Array [
+  "_id",
+  "name",
+  "birthday",
+  "_id",
+  "image",
+  "placeId",
+  "description",
+  "lat",
+  "lng",
+  "coordinates",
+]
+`;
+
+exports[`Creating random user and profile 2`] = `
+Array [
+  "_id",
+  "name",
+  "email",
+  "token",
+  "hasProfile",
+]
+`;
