@@ -1,7 +1,4 @@
-/* eslint-disable no-underscore-dangle */
-import jwt from 'jsonwebtoken';
 import { ApolloError } from 'apollo-server-express';
-import moment from 'moment';
 import { unlinkSync, writeFileSync } from 'fs';
 import path from 'path';
 import Profile from '../models/Profile';
@@ -9,6 +6,8 @@ import bucket from '../storage';
 import ERROR_MESSAGES from '../constants/errorMessages';
 import User from '../models/User';
 import Like from '../models/Like';
+import { getAstralMapIndexes } from './astrology';
+import { datetimeToBrasiliaUtc, formatUtcOffset } from '../util';
 
 const uploadProfileImages = async ({ file, filename }) => {
   const tempPath = path.join(__dirname, './', filename);
@@ -28,29 +27,45 @@ const uploadProfileImages = async ({ file, filename }) => {
 };
 
 export const createProfile = async args => {
-  const { authorization, name, birthday, file, fileExtension, input } = args;
+  const { user, name, birthday, file, fileExtension, input } = args;
+  const { _id: userId, hasProfile } = user;
+  const { lat, lng, UTC } = input;
 
-  const token = authorization.replace('Bearer ', '');
+  if (hasProfile) {
+    throw new ApolloError(ERROR_MESSAGES.PROFILE_ALREADY_EXISTS);
+  }
+
+  const formattedBirthDate = datetimeToBrasiliaUtc(birthday);
+
+  const astralIndexes = await getAstralMapIndexes({
+    name,
+    birthdate: new Date(formattedBirthDate),
+    latitude: lat,
+    longitude: lng,
+    birthplaceFuso: formatUtcOffset(UTC)
+  });
 
   try {
-    const { _id: userId } = jwt.verify(token, process.env.JWT_KEY);
     const profile = new Profile({
       _id: userId,
       name,
-      birthday: moment(birthday, 'DD/MM/YYYY HH:mm')
-        .subtract(3, 'hours')
-        .format(),
+      birthday: formattedBirthDate,
       images: [{ image: '' }],
+      astralIndexes,
       birthplace: {
         ...input
       }
     });
+
     const { images } = await profile.save();
+
     const imageId = images[0]._id;
     const filename = `${userId}.${imageId}.${fileExtension || 'png'}`;
+
     const imageUrl = await uploadProfileImages({ file, filename });
 
     await profile.addProfileImage(imageUrl);
+
     await User.findByIdAndUpdate(userId, {
       hasProfile: true
     });

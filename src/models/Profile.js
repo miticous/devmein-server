@@ -58,6 +58,10 @@ export const profileSchema = mongoose.Schema({
       type: String,
       required: true
     }
+  },
+  astralIndexes: {
+    type: String,
+    required: true
   }
 });
 

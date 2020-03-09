@@ -43,8 +43,8 @@ const resolvers = {
     }
   },
   Mutation: {
-    createProfile: async (_, args, context) => {
-      const profile = await createProfile({ authorization: context.authorization, ...args });
+    createProfile: async (_, args, { user }) => {
+      const profile = await createProfile({ user, ...args });
       return profile;
     },
     sendMessage: async (_, { matchId, message }, { user: { _id } }) => {
