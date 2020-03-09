@@ -37,9 +37,9 @@ export const createProfile = async args => {
     const profile = new Profile({
       _id: userId,
       name,
-      birthday: moment(new Date(birthday))
+      birthday: moment(birthday, 'DD/MM/YYYY HH:mm')
         .subtract(3, 'hours')
-        .toString(),
+        .format(),
       images: [{ image: '' }],
       birthplace: {
         ...input
