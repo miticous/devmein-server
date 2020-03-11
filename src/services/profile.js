@@ -51,7 +51,7 @@ export const createProfile = async args => {
       name,
       birthday: formattedBirthDate,
       images: [{ image: '' }],
-      astralIndexes,
+      astralIndexes: astralIndexes.join(' '),
       birthplace: {
         ...input
       }

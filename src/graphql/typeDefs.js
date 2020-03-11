@@ -66,11 +66,12 @@ export default gql`
       name: String!
       birthday: String!
       file: String!
-      filename: String!
+      filename: String
       input: BirthplaceInput!
     ): Profile
     sendMessage(matchId: String!, message: String!): Chat
     likeSomeone(userLikedId: String!): Match
+    unlikeSomeone(userUnlikedId: String!): String
     sendGeoLocation(latitude: String!, longitude: String!): String
   }
   type Subscription {

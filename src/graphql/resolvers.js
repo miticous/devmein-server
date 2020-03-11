@@ -6,6 +6,7 @@ import { sendMessage } from '../services/chat';
 import Chat from '../models/Chat';
 import { like } from '../services/like';
 import Match from '../models/Match';
+import { unlike } from '../services/unlike';
 
 const pubsub = new PubSub();
 
@@ -59,6 +60,9 @@ const resolvers = {
     likeSomeone: async (_, { userLikedId }, { user }) => {
       const match = await like({ userLikedId, user });
       return match;
+    },
+    unlikeSomeone: async (_, { userUnlikedId }, { user }) => {
+      await unlike({ user, userUnlikedId });
     },
     sendGeoLocation: async (_, args, { user: { _id } }) => {
       await updateProfileLocation({ ...args, userId: _id });

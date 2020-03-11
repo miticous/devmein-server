@@ -14,11 +14,15 @@ export const like = async ({ userLikedId, user }) => {
     throw new Error('User liked not exists');
   }
 
-  await Like.findOneAndUpdate(
-    { _id: user._id },
-    { $addToSet: { likes: { _id: userLikedId } } },
-    { new: true, upsert: true }
-  );
+  try {
+    await Like.findOneAndUpdate(
+      { _id: user._id, 'likes._id': { $ne: { _id: userLikedId } } },
+      { $addToSet: { likes: { _id: userLikedId } } },
+      { new: true, upsert: true }
+    );
+  } catch (error) {
+    throw new Error('User already liked');
+  }
 
   const isUserLikerLiked = await Like.findOne({
     _id: userLikedProfile._id,
