@@ -1,12 +1,12 @@
 import { PubSub } from 'apollo-server-express';
 import { createProfile, getProfilesToHome, updateProfileLocation } from '../services/profile';
-import User from '../models/User';
 import Profile from '../models/Profile';
 import { sendMessage } from '../services/chat';
 import Chat from '../models/Chat';
 import { like } from '../services/like';
 import Match from '../models/Match';
 import { unlike } from '../services/unlike';
+import { saveUserConfig } from '../services/user';
 
 const pubsub = new PubSub();
 
@@ -19,9 +19,9 @@ const resolvers = {
     }
   },
   Query: {
-    user: async (_, __, { user: { _id } }) => {
-      const { name, email } = await User.findById(_id);
-      return { name, email };
+    user: async (_, __, { user }) => {
+      const { name, email, configs } = user;
+      return { name, email, configs };
     },
     profile: async (_, __, { user: { _id } }) => {
       const profile = await Profile.findById(_id);
@@ -66,6 +66,9 @@ const resolvers = {
     },
     sendGeoLocation: async (_, args, { user: { _id } }) => {
       await updateProfileLocation({ ...args, userId: _id });
+    },
+    saveConfigs: async (_, { maxDistance, searchGenre }, { user }) => {
+      await saveUserConfig({ maxDistance, searchGenre, user });
     }
   }
 };

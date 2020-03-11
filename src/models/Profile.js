@@ -63,7 +63,7 @@ export const profileSchema = mongoose.Schema({
     type: String,
     required: true,
     validate: value => {
-      if (value !== 'MALE' || value !== 'FEMALE') {
+      if (value !== 'MALE' && value !== 'FEMALE') {
         throw new Error('Undefined genre is not alowed');
       }
     },

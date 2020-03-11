@@ -82,3 +82,9 @@ export const logout = async token => {
   }
   return true;
 };
+
+export const saveUserConfig = async ({ user, maxDistance, searchGenre }) => {
+  await User.findOneAndUpdate({ _id: user._id, configs: { maxDistance, searchGenre } });
+
+  return true;
+};

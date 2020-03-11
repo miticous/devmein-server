@@ -15,9 +15,13 @@ export default gql`
     chat(matchId: String): Chat
     matches: [Match]
   }
+  type UserConfigs {
+    maxDistance: String!
+    searchGenre: String!
+  }
   type User {
     email: String
-    name: String
+    configs: UserConfigs!
   }
   type Images {
     _id: String
@@ -75,6 +79,7 @@ export default gql`
     likeSomeone(userLikedId: String!): Match
     unlikeSomeone(userUnlikedId: String!): String
     sendGeoLocation(latitude: String!, longitude: String!): String
+    saveConfigs(maxDistance: String, searchGenre: String): String
   }
   type Subscription {
     updateChat: Chat
