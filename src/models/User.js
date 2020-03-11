@@ -28,6 +28,18 @@ const userSchema = mongoose.Schema({
     type: Boolean,
     required: true,
     default: false
+  },
+  configs: {
+    maxDistance: {
+      type: Number,
+      required: false,
+      default: 100
+    },
+    searchGenre: {
+      type: String,
+      required: false,
+      default: ''
+    }
   }
 });
 

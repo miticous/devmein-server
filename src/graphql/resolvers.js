@@ -30,8 +30,8 @@ const resolvers = {
       }
       return profile;
     },
-    home: async (_, { maxDistance }, { user: { _id } }) => {
-      const profiles = await getProfilesToHome({ userId: _id, maxDistance });
+    home: async (_, __, { user }) => {
+      const profiles = await getProfilesToHome({ user });
       return profiles;
     },
     chat: async (_, { matchId }, { user: { _id } }) => {

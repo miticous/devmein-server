@@ -11,7 +11,7 @@ export default gql`
   type Query {
     user: User
     profile: Profile
-    home(maxDistance: String): [Profile]
+    home: [Profile]
     chat(matchId: String): Chat
     matches: [Match]
   }
@@ -40,6 +40,7 @@ export default gql`
     images: [Images]
     birthplace: Birthplace!
     loc: Loc
+    genre: String
   }
   type Message {
     _id: String
@@ -68,6 +69,7 @@ export default gql`
       file: String!
       filename: String
       input: BirthplaceInput!
+      genre: String
     ): Profile
     sendMessage(matchId: String!, message: String!): Chat
     likeSomeone(userLikedId: String!): Match

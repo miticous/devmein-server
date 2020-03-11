@@ -59,6 +59,16 @@ export const profileSchema = mongoose.Schema({
       required: true
     }
   },
+  genre: {
+    type: String,
+    required: true,
+    validate: value => {
+      if (value !== 'MALE' || value !== 'FEMALE') {
+        throw new Error('Undefined genre is not alowed');
+      }
+    },
+    default: ''
+  },
   astralIndexes: {
     type: String,
     required: true

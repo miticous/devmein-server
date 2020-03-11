@@ -6,26 +6,22 @@ import User from '../models/User';
 import ERROR_MESSAGES from '../constants/errorMessages';
 
 export const registerUser = async args => {
-  const encryptedPassword = await bcrypt.hash(args.password.toString(), 8);
-  const id = new mongoose.Types.ObjectId();
-  const user = new User({
-    _id: id,
-    ...args,
-    password: encryptedPassword,
-    token: jwt.sign({ _id: id }, process.env.JWT_KEY)
-  });
+  try {
+    const encryptedPassword = await bcrypt.hash(args.password.toString(), 8);
+    const id = new mongoose.Types.ObjectId();
+    const user = new User({
+      _id: id,
+      email: args.email,
+      password: encryptedPassword,
+      token: jwt.sign({ _id: id }, process.env.JWT_KEY)
+    });
 
-  const data = await user.save().catch(err => {
-    if (err.errmsg) {
-      throw ERROR_MESSAGES.USER_ALREADY_EXISTS;
-    }
-    if (err.message) {
-      throw ERROR_MESSAGES.INVALID_DATA_FIELDS;
-    }
-    return err;
-  });
+    const data = await user.save();
 
-  return data;
+    return data;
+  } catch (error) {
+    throw new Error('User already exists');
+  }
 };
 
 export const login = async args => {

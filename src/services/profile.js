@@ -28,7 +28,7 @@ const uploadProfileImages = async ({ file, filename }) => {
 };
 
 export const createProfile = async args => {
-  const { user, name, birthday, file, fileExtension, input } = args;
+  const { user, name, birthday, file, fileExtension, input, genre } = args;
   const { _id: userId, hasProfile } = user;
   const { lat, lng, UTC } = input;
 
@@ -55,7 +55,8 @@ export const createProfile = async args => {
       astralIndexes: astralIndexes.join(' '),
       birthplace: {
         ...input
-      }
+      },
+      genre
     });
 
     const { images } = await profile.save();
@@ -80,7 +81,7 @@ export const createProfile = async args => {
   }
 };
 
-const getProfilesByDistanceAndInteraction = async ({ interactions, maxDistance, userLocation }) => {
+const getProfilesWithConditions = async ({ interactions, maxDistance, userLocation, genre }) => {
   const profiles = await Profile.find({
     $and: [
       {
@@ -93,25 +94,31 @@ const getProfilesByDistanceAndInteraction = async ({ interactions, maxDistance, 
             },
             $maxDistance: maxDistance * 1110.12 || 100
           }
-        }
+        },
+        genre
       }
     ]
   });
   return profiles;
 };
 
-export const getProfilesToHome = async ({ userId, maxDistance }) => {
+export const getProfilesToHome = async ({ user }) => {
+  const {
+    _id,
+    configs: { maxDistance, searchGenre }
+  } = user;
   const {
     loc: { coordinates }
-  } = await Profile.findOne({ _id: userId }, { loc: 1, _id: 0 });
+  } = await Profile.findOne({ _id: user._id }, { loc: 1, _id: 0 });
 
-  const profilesUnlikedByUser = await getUnlikesByUserId({ userId });
-  const profilesLikedByUser = await getLikesByUserId({ userId });
+  const profilesUnlikedByUser = await getUnlikesByUserId({ userId: _id });
+  const profilesLikedByUser = await getLikesByUserId({ userId: _id });
 
-  const profiles = await getProfilesByDistanceAndInteraction({
-    interactions: [...profilesUnlikedByUser, ...profilesLikedByUser, userId],
+  const profiles = await getProfilesWithConditions({
+    interactions: [...profilesUnlikedByUser, ...profilesLikedByUser, _id],
     userLocation: coordinates,
-    maxDistance
+    maxDistance,
+    genre: searchGenre
   });
 
   return profiles;
