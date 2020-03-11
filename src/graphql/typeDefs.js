@@ -74,6 +74,7 @@ export default gql`
       filename: String
       input: BirthplaceInput!
       genre: String
+      searchGenre: String!
     ): Profile
     sendMessage(matchId: String!, message: String!): Chat
     likeSomeone(userLikedId: String!): Match

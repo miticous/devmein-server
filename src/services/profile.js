@@ -28,7 +28,7 @@ const uploadProfileImages = async ({ file, filename }) => {
 };
 
 export const createProfile = async args => {
-  const { user, name, birthday, file, fileExtension, input, genre } = args;
+  const { user, name, birthday, file, fileExtension, input, genre, searchGenre } = args;
   const { _id: userId, hasProfile } = user;
   const { lat, lng, UTC } = input;
 
@@ -68,9 +68,15 @@ export const createProfile = async args => {
 
     await profile.addProfileImage(imageUrl);
 
-    await User.findByIdAndUpdate(userId, {
-      hasProfile: true
-    });
+    await User.findOneAndUpdate(
+      { _id: userId },
+      {
+        $set: {
+          'configs.searchGenre': searchGenre
+        },
+        hasProfile: true
+      }
+    );
 
     return profile;
   } catch (error) {

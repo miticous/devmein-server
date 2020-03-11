@@ -84,7 +84,16 @@ export const logout = async token => {
 };
 
 export const saveUserConfig = async ({ user, maxDistance, searchGenre }) => {
-  await User.findOneAndUpdate({ _id: user._id, configs: { maxDistance, searchGenre } });
+  await User.findOneAndUpdate(
+    { _id: user._id },
+    {
+      $set: {
+        'configs.searchGenre': searchGenre,
+        'configs.maxDistance': maxDistance
+      },
+      hasProfile: true
+    }
+  );
 
   return true;
 };
