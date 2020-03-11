@@ -1,6 +1,6 @@
 import Like from '../models/Like';
 import Profile from '../models/Profile';
-import Match from '../models/Match';
+import { createMatch } from './match';
 
 export const like = async ({ userLikedId, user }) => {
   if (userLikedId === user._id) {
@@ -33,18 +33,17 @@ export const like = async ({ userLikedId, user }) => {
     return false;
   }
 
-  const isMatchAlreadyCreated = await Match.findOne({
-    $and: [{ 'matches._id': user._id }, { 'matches._id': userLikedId }]
-  });
+  const match = await createMatch({ userLikedProfile, userLikerProfile });
 
-  if (isMatchAlreadyCreated) {
-    throw new Error('Users already been matched');
+  return match;
+};
+
+export const getLikesByUserId = async ({ userId }) => {
+  try {
+    const { likes } = await Like.findOne({ _id: userId }, { likes: 1, _id: 0 });
+
+    return likes;
+  } catch (error) {
+    return [];
   }
-
-  const match = new Match({
-    matches: [userLikedProfile, userLikerProfile]
-  });
-  const newMatch = await match.save();
-
-  return newMatch;
 };

@@ -18,3 +18,13 @@ export const unlike = async ({ user, userUnlikedId }) => {
     throw new Error('This user is already unliked');
   }
 };
+
+export const getUnlikesByUserId = async ({ userId }) => {
+  try {
+    const { unlikes } = await Unlike.findOne({ _id: userId }, { unlikes: 1, _id: 0 });
+
+    return unlikes;
+  } catch (error) {
+    return [];
+  }
+};

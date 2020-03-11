@@ -21,8 +21,7 @@ const matchSchema = mongoose.Schema({
     },
     sentAt: {
       type: Date,
-      required: true,
-      default: () => getServerDate()
+      required: false
     },
     text: {
       type: String,
@@ -30,8 +29,7 @@ const matchSchema = mongoose.Schema({
     },
     viewed: {
       type: Boolean,
-      required: false,
-      default: false
+      required: false
     }
   }
 });

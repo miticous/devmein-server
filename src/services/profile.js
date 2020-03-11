@@ -5,9 +5,10 @@ import Profile from '../models/Profile';
 import bucket from '../storage';
 import ERROR_MESSAGES from '../constants/errorMessages';
 import User from '../models/User';
-import Like from '../models/Like';
 import { getAstralMapIndexes } from './astrology';
 import { datetimeToBrasiliaUtc, formatUtcOffset } from '../util';
+import { getUnlikesByUserId } from './unlike';
+import { getLikesByUserId } from './like';
 
 const uploadProfileImages = async ({ file, filename }) => {
   const tempPath = path.join(__dirname, './', filename);
@@ -79,32 +80,38 @@ export const createProfile = async args => {
   }
 };
 
-export const getProfilesToHome = async ({ userId, maxDistance }) => {
-  const profilesIdsLikedByUser = await Like.findOne({ _id: userId }, { likes: 1, _id: 0 });
-  const {
-    loc: { coordinates }
-  } = await Profile.findOne({ _id: userId }, { loc: 1, _id: 0 });
-
-  const condition =
-    profilesIdsLikedByUser && profilesIdsLikedByUser.likes.length > 0
-      ? [...profilesIdsLikedByUser.likes.map(like => like._id), userId]
-      : [userId];
-
+const getProfilesByDistanceAndInteraction = async ({ interactions, maxDistance, userLocation }) => {
   const profiles = await Profile.find({
     $and: [
       {
-        _id: { $nin: condition },
+        _id: { $nin: interactions },
         loc: {
           $near: {
             $geometry: {
               type: 'Point',
-              coordinates
+              coordinates: userLocation
             },
             $maxDistance: maxDistance * 1110.12 || 100
           }
         }
       }
     ]
+  });
+  return profiles;
+};
+
+export const getProfilesToHome = async ({ userId, maxDistance }) => {
+  const {
+    loc: { coordinates }
+  } = await Profile.findOne({ _id: userId }, { loc: 1, _id: 0 });
+
+  const profilesUnlikedByUser = await getUnlikesByUserId({ userId });
+  const profilesLikedByUser = await getLikesByUserId({ userId });
+
+  const profiles = await getProfilesByDistanceAndInteraction({
+    interactions: [...profilesUnlikedByUser, ...profilesLikedByUser, userId],
+    userLocation: coordinates,
+    maxDistance
   });
 
   return profiles;
