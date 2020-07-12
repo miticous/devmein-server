@@ -1,6 +1,7 @@
 import { ApolloError } from 'apollo-server-express';
 import { unlinkSync, writeFileSync } from 'fs';
 import path from 'path';
+import mongoose from 'mongoose';
 import Profile from '../models/Profile';
 import bucket from '../storage';
 import ERROR_MESSAGES from '../constants/errorMessages';
@@ -38,7 +39,7 @@ export const createProfile = async args => {
 
   const formattedBirthDate = datetimeToBrasiliaUtc(birthday);
 
-  const astralIndexes = await getAstralMapIndexes({
+  const { zodiac } = await getAstralMapIndexes({
     name,
     birthdate: new Date(formattedBirthDate),
     latitude: lat,
@@ -52,7 +53,8 @@ export const createProfile = async args => {
       name,
       birthday: formattedBirthDate,
       images: [{ image: '' }],
-      astralIndexes: astralIndexes.join(' '),
+      astralIndexes: '9 1 6 9 1',
+      sign: zodiac,
       birthplace: {
         ...input
       },
@@ -141,4 +143,52 @@ export const updateProfileLocation = async ({ latitude, longitude, userId }) => 
     },
     { new: true, upsert: true }
   );
+};
+
+export const addProfileImage = async ({ user, file }) => {
+  const imageId = new mongoose.Types.ObjectId();
+  const imageName = `${user._id}.${imageId}.png`;
+  const imageLink = `https://firebasestorage.googleapis.com/v0/b/jintou-d0ad5.appspot.com/o/${imageName}?alt=media&token`;
+
+  try {
+    await uploadProfileImages({ file, filename: imageName });
+    await Profile.findOneAndUpdate(
+      { _id: user._id },
+      { $addToSet: { images: { _id: imageId, image: imageLink } } },
+      { new: true, upsert: true }
+    );
+
+    return true;
+  } catch (error) {
+    await Profile.findOneAndUpdate(
+      { _id: user._id },
+      { $pull: { images: { _id: imageId, image: imageLink } } },
+      { new: true, upsert: true }
+    );
+    await bucket.file(imageName).delete();
+    return false;
+  }
+};
+
+export const removeProfileImage = async ({ user, imageId }) => {
+  const { images } = await Profile.findOne({ _id: user._id });
+  const isUserImageOwner = images.find(image => image.image.includes(user._id));
+  const imageName = `${user._id}.${imageId}.png`;
+
+  try {
+    if (isUserImageOwner) {
+      await Profile.findOneAndUpdate(
+        { _id: user._id },
+        { $pull: { images: { _id: imageId } } },
+        { new: true, upsert: true }
+      );
+      await bucket.file(imageName).delete();
+
+      return true;
+    }
+  } catch (error) {
+    return false;
+  }
+
+  return false;
 };

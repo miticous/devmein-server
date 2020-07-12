@@ -1,5 +1,11 @@
 import { PubSub } from 'apollo-server-express';
-import { createProfile, getProfilesToHome, updateProfileLocation } from '../services/profile';
+import {
+  createProfile,
+  getProfilesToHome,
+  updateProfileLocation,
+  addProfileImage,
+  removeProfileImage
+} from '../services/profile';
 import Profile from '../models/Profile';
 import { sendMessage } from '../services/chat';
 import Chat from '../models/Chat';
@@ -69,6 +75,12 @@ const resolvers = {
     },
     saveConfigs: async (_, { maxDistance, searchGenre }, { user }) => {
       await saveUserConfig({ maxDistance, searchGenre, user });
+    },
+    addProfileImage: async (_, { file }, { user }) => {
+      await addProfileImage({ file, user });
+    },
+    removeProfileImage: async (_, { imageId }, { user }) => {
+      await removeProfileImage({ imageId, user });
     }
   }
 };

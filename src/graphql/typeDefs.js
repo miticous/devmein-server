@@ -44,6 +44,7 @@ export default gql`
     images: [Images]
     birthplace: Birthplace!
     loc: Loc
+    sign: String
     genre: String
   }
   type Message {
@@ -81,6 +82,8 @@ export default gql`
     unlikeSomeone(userUnlikedId: String!): String
     sendGeoLocation(latitude: String!, longitude: String!): String
     saveConfigs(maxDistance: String, searchGenre: String): String
+    addProfileImage(file: String!): String
+    removeProfileImage(imageId: String!): String
   }
   type Subscription {
     updateChat: Chat

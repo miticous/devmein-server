@@ -29,6 +29,7 @@ export const profileSchema = mongoose.Schema({
   },
   images: [
     {
+      _id: mongoose.Schema.Types.ObjectId,
       image: {
         type: String,
         required: false
@@ -68,6 +69,12 @@ export const profileSchema = mongoose.Schema({
       }
     },
     default: ''
+  },
+  sign: {
+    astralIndexes: {
+      type: String,
+      required: true
+    }
   },
   astralIndexes: {
     type: String,

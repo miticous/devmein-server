@@ -21,7 +21,7 @@ const getAstralMapIndexes = async ({
     horaverao: 'false',
     placename: ''
   });
-
+  console.log(data);
   return data;
 };
 
