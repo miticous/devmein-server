@@ -79,6 +79,26 @@ export const profileSchema = mongoose.Schema({
   astralIndexes: {
     type: String,
     required: true
+  },
+  eyes: {
+    type: String,
+    required: true
+  },
+  graduation: {
+    type: String,
+    required: true
+  },
+  graduationPlace: {
+    type: String,
+    required: true
+  },
+  occupation: {
+    type: String,
+    required: true
+  },
+  live: {
+    type: String,
+    required: true
   }
 });
 

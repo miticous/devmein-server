@@ -1,6 +1,6 @@
 import { PubSub } from 'apollo-server-express';
 import {
-  createProfile,
+  editProfile,
   getProfilesToHome,
   updateProfileLocation,
   addProfileImage,
@@ -50,8 +50,8 @@ const resolvers = {
     }
   },
   Mutation: {
-    createProfile: async (_, args, { user }) => {
-      const profile = await createProfile({ user, ...args });
+    editProfile: async (_, args, { user }) => {
+      const profile = await editProfile({ user, ...args });
       return profile;
     },
     sendMessage: async (_, { matchId, message }, { user: { _id } }) => {

@@ -12,17 +12,21 @@ const getAstralMapIndexes = async ({
   birthplaceFuso
   //   horaverao
 }) => {
-  const { data } = await api.post('/indices/instinto', {
-    name,
-    latitude,
-    longitude,
-    birthdate,
-    birthplace_fuso: birthplaceFuso,
-    horaverao: 'false',
-    placename: ''
-  });
-  console.log(data);
-  return data;
+  try {
+    const { data } = await api.post('/indices/instinto', {
+      name,
+      latitude,
+      longitude,
+      birthdate,
+      birthplace_fuso: birthplaceFuso,
+      horaverao: 'false',
+      placename: ''
+    });
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export { getAstralMapIndexes, api };

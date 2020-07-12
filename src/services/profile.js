@@ -10,6 +10,7 @@ import { getAstralMapIndexes } from './astrology';
 import { datetimeToBrasiliaUtc, formatUtcOffset } from '../util';
 import { getUnlikesByUserId } from './unlike';
 import { getLikesByUserId } from './like';
+import { getCitieById } from './google-apis';
 
 const uploadProfileImages = async ({ file, filename }) => {
   const tempPath = path.join(__dirname, './', filename);
@@ -28,14 +29,20 @@ const uploadProfileImages = async ({ file, filename }) => {
   return `https://firebasestorage.googleapis.com/v0/b/jintou-d0ad5.appspot.com/o/${filename}?alt=media&token`;
 };
 
-export const createProfile = async args => {
-  const { user, name, birthday, file, fileExtension, input, genre, searchGenre } = args;
-  const { _id: userId, hasProfile } = user;
-  const { lat, lng, UTC } = input;
-
-  if (hasProfile) {
-    throw new ApolloError(ERROR_MESSAGES.PROFILE_ALREADY_EXISTS);
-  }
+export const editProfile = async args => {
+  const {
+    user,
+    name,
+    birthday,
+    birthplaceId,
+    occupation,
+    eyes,
+    graduation,
+    graduationPlace,
+    live
+  } = args;
+  const { lat, lng, UTC, placeId } = await getCitieById(birthplaceId);
+  console.log(lat, lng, UTC, placeId);
 
   const formattedBirthDate = datetimeToBrasiliaUtc(birthday);
 
@@ -48,43 +55,29 @@ export const createProfile = async args => {
   });
 
   try {
-    const profile = new Profile({
-      _id: userId,
-      name,
-      birthday: formattedBirthDate,
-      images: [{ image: '' }],
-      astralIndexes: '9 1 6 9 1',
-      sign: zodiac,
-      birthplace: {
-        ...input
-      },
-      genre
-    });
-
-    const { images } = await profile.save();
-
-    const imageId = images[0]._id;
-    const filename = `${userId}.${imageId}.${fileExtension || 'png'}`;
-
-    const imageUrl = await uploadProfileImages({ file, filename });
-
-    await profile.addProfileImage(imageUrl);
-
-    await User.findOneAndUpdate(
-      { _id: userId },
+    const profile = await Profile.findOneAndUpdate(
+      { _id: user._id },
       {
-        $set: {
-          'configs.searchGenre': searchGenre
+        name,
+        birthday: formattedBirthDate,
+        astralIndexes: '9 1 6 9 1',
+        sign: zodiac,
+        birthplace: {
+          placeId,
+          lat,
+          lng
         },
-        hasProfile: true
-      }
+        occupation,
+        eyes,
+        graduation,
+        graduationPlace,
+        live
+      },
+      { new: true, upsert: true }
     );
 
     return profile;
   } catch (error) {
-    if (error.toString().includes('E11000')) {
-      throw new ApolloError(ERROR_MESSAGES.PROFILE_ALREADY_EXISTS);
-    }
     throw new ApolloError(error);
   }
 };

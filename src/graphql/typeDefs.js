@@ -46,6 +46,11 @@ export default gql`
     loc: Loc
     sign: String
     genre: String
+    eyes: String
+    occupation: String
+    graduation: String
+    graduationPlace: String
+    live: String
   }
   type Message {
     _id: String
@@ -68,14 +73,15 @@ export default gql`
     lastMessage: Message
   }
   type Mutation {
-    createProfile(
+    editProfile(
       name: String!
       birthday: String!
-      file: String!
-      filename: String
-      input: BirthplaceInput!
-      genre: String
-      searchGenre: String!
+      birthplaceId: String!
+      eyes: String
+      graduation: String
+      graduationPlace: String
+      occupation: String
+      live: String
     ): Profile
     sendMessage(matchId: String!, message: String!): Chat
     likeSomeone(userLikedId: String!): Match
