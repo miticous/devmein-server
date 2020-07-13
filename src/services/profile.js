@@ -5,7 +5,6 @@ import mongoose from 'mongoose';
 import Profile from '../models/Profile';
 import bucket from '../storage';
 import ERROR_MESSAGES from '../constants/errorMessages';
-import User from '../models/User';
 import { getAstralMapIndexes } from './astrology';
 import { datetimeToBrasiliaUtc, formatUtcOffset } from '../util';
 import { getUnlikesByUserId } from './unlike';
@@ -30,23 +29,12 @@ const uploadProfileImages = async ({ file, filename }) => {
 };
 
 export const editProfile = async args => {
-  const {
-    user,
-    name,
-    birthday,
-    birthplaceId,
-    occupation,
-    eyes,
-    graduation,
-    graduationPlace,
-    live
-  } = args;
-  const { lat, lng, UTC, placeId } = await getCitieById(birthplaceId);
-  console.log(lat, lng, UTC, placeId);
+  const { user, name, birthday, birthplace, occupation, eyes, graduation, residence } = args;
+  const { lat, lng, UTC, placeId } = await getCitieById(birthplace.placeId);
 
   const formattedBirthDate = datetimeToBrasiliaUtc(birthday);
 
-  const { zodiac } = await getAstralMapIndexes({
+  const { zodiac, instinto } = await getAstralMapIndexes({
     name,
     birthdate: new Date(formattedBirthDate),
     latitude: lat,
@@ -60,18 +48,24 @@ export const editProfile = async args => {
       {
         name,
         birthday: formattedBirthDate,
-        astralIndexes: '9 1 6 9 1',
+        astralIndexes: instinto,
         sign: zodiac,
         birthplace: {
+          description: birthplace.description,
           placeId,
           lat,
           lng
         },
         occupation,
         eyes,
-        graduation,
-        graduationPlace,
-        live
+        graduation: {
+          ...graduation,
+          placeId: graduation.description.length === 0 ? null : graduation.placeId
+        },
+        residence: {
+          ...residence,
+          placeId: residence.description.length === 0 ? null : residence.placeId
+        }
       },
       { new: true, upsert: true }
     );

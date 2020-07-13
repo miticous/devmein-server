@@ -6,7 +6,15 @@ export default gql`
     description: String!
     lat: String!
     lng: String!
-    UTC: String!
+  }
+  input GraduationInput {
+    class: String
+    description: String
+    placeId: String
+  }
+  input ResidenceInput {
+    description: String
+    placeId: String
   }
   type Query {
     user: User
@@ -37,6 +45,15 @@ export default gql`
     lng: String!
     UTC: String!
   }
+  type Graduation {
+    class: String
+    description: String
+    placeId: String
+  }
+  type Residence {
+    description: String
+    placeId: String
+  }
   type Profile {
     _id: String
     name: String
@@ -48,9 +65,8 @@ export default gql`
     genre: String
     eyes: String
     occupation: String
-    graduation: String
-    graduationPlace: String
-    live: String
+    graduation: Graduation
+    residence: Residence
   }
   type Message {
     _id: String
@@ -76,12 +92,11 @@ export default gql`
     editProfile(
       name: String!
       birthday: String!
-      birthplaceId: String!
+      birthplace: BirthplaceInput!
       eyes: String
-      graduation: String
-      graduationPlace: String
+      graduation: GraduationInput
       occupation: String
-      live: String
+      residence: ResidenceInput
     ): Profile
     sendMessage(matchId: String!, message: String!): Chat
     likeSomeone(userLikedId: String!): Match

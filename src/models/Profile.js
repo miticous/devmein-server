@@ -85,20 +85,32 @@ export const profileSchema = mongoose.Schema({
     required: true
   },
   graduation: {
-    type: String,
-    required: true
-  },
-  graduationPlace: {
-    type: String,
-    required: true
+    class: {
+      type: String,
+      required: true
+    },
+    description: {
+      type: String,
+      required: true
+    },
+    placeId: {
+      type: String,
+      required: true
+    }
   },
   occupation: {
     type: String,
     required: true
   },
-  live: {
-    type: String,
-    required: true
+  residence: {
+    description: {
+      type: String,
+      required: true
+    },
+    placeId: {
+      type: String,
+      required: true
+    }
   }
 });
 
