@@ -44,9 +44,9 @@ export const login = async args => {
     { new: true }
   );
 
-  const { hasProfile, _id, name, email, token } = updatedUser;
+  const { profileStatus, _id, name, email, token } = updatedUser;
 
-  return { _id, name, email, token, hasProfile };
+  return { _id, name, email, token, profileStatus };
 };
 
 export const auth = async ({ userId, token }) => {
@@ -55,7 +55,7 @@ export const auth = async ({ userId, token }) => {
   if (!user) {
     throw ERROR_MESSAGES.AUTHENTICATION_FAILED;
   }
-  return user.hasProfile;
+  return user.profileStatus;
 };
 
 export const logout = async token => {
@@ -89,7 +89,8 @@ export const saveUserConfig = async ({
   searchLoveAgeRange,
   searchFriendAgeRange,
   searchLoveGenre,
-  searchFriendGenre
+  searchFriendGenre,
+  profileStatus
 }) => {
   await User.findOneAndUpdate(
     { _id: user._id },
@@ -101,7 +102,7 @@ export const saveUserConfig = async ({
         'configs.friendShip.genre': searchFriendGenre,
         'configs.maxDistance': maxDistance
       },
-      hasProfile: true
+      profileStatus
     }
   );
 

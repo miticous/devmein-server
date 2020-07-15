@@ -26,8 +26,8 @@ const resolvers = {
   },
   Query: {
     user: async (_, __, { user }) => {
-      const { name, email, configs } = user;
-      return { name, email, configs };
+      const { configs, profileStatus } = user;
+      return { configs, profileStatus };
     },
     profile: async (_, __, { user: { _id } }) => {
       const profile = await Profile.findById(_id);

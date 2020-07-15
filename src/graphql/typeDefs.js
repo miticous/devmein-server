@@ -21,13 +21,23 @@ export default gql`
     chat(matchId: String): Chat
     matches: [Match]
   }
+  type Love {
+    range: [Int]
+    genre: String
+  }
+  type FriendShip {
+    range: [Int]
+    genre: String
+  }
   type UserConfigs {
-    maxDistance: String!
-    searchGenre: String!
+    maxDistance: String
+    love: Love
+    friendShip: FriendShip
   }
   type User {
     email: String
     configs: UserConfigs!
+    profileStatus: String
   }
   type Images {
     _id: String
@@ -39,9 +49,9 @@ export default gql`
   type Birthplace {
     placeId: String!
     description: String!
-    lat: String!
-    lng: String!
-    UTC: String!
+    lat: String
+    lng: String
+    UTC: String
   }
   type Graduation {
     class: String
@@ -52,19 +62,24 @@ export default gql`
     description: String
     placeId: String
   }
+  type Astral {
+    indexes: String
+    zodiac: String
+  }
   type Profile {
     _id: String
     name: String
     birthday: String
     images: [Images]
-    birthplace: Birthplace!
+    birthplace: Birthplace
     loc: Loc
-    sign: String
+    astral: Astral
     genre: String
     eyes: String
     occupation: String
     graduation: Graduation
     residence: Residence
+    sexualOrientations: [String]
   }
   type Message {
     _id: String
@@ -108,6 +123,7 @@ export default gql`
       searchFriendAgeRange: [Int]!
       searchLoveGenre: String!
       searchFriendGenre: String!
+      profileStatus: String!
     ): String
     addProfileImage(file: String!): String
     removeProfileImage(imageId: String!): String

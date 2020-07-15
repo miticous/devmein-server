@@ -24,10 +24,11 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  hasProfile: {
-    type: Boolean,
+  profileStatus: {
+    type: String,
+    enum: ['PENDING', 'CREATION', 'COMPLETED'],
     required: true,
-    default: false
+    default: 'PENDING'
   },
   configs: {
     maxDistance: {
