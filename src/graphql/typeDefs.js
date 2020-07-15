@@ -4,8 +4,6 @@ export default gql`
   input BirthplaceInput {
     placeId: String!
     description: String!
-    lat: String!
-    lng: String!
   }
   input GraduationInput {
     class: String
@@ -92,17 +90,25 @@ export default gql`
     editProfile(
       name: String!
       birthday: String!
-      birthplace: BirthplaceInput!
       eyes: String
-      graduation: GraduationInput
       occupation: String
+      genre: String!
+      sexualOrientations: [String]!
+      birthplace: BirthplaceInput!
+      graduation: GraduationInput
       residence: ResidenceInput
     ): Profile
     sendMessage(matchId: String!, message: String!): Chat
     likeSomeone(userLikedId: String!): Match
     unlikeSomeone(userUnlikedId: String!): String
     sendGeoLocation(latitude: String!, longitude: String!): String
-    saveConfigs(maxDistance: String, searchGenre: String): String
+    saveUserConfigs(
+      maxDistance: String
+      searchLoveAgeRange: [Int]!
+      searchFriendAgeRange: [Int]!
+      searchLoveGenre: String!
+      searchFriendGenre: String!
+    ): String
     addProfileImage(file: String!): String
     removeProfileImage(imageId: String!): String
   }

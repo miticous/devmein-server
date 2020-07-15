@@ -22,10 +22,10 @@ const getAstralMapIndexes = async ({
       horaverao: 'false',
       placename: ''
     });
-    console.log(data);
+
     return data;
   } catch (error) {
-    console.log(error);
+    return false;
   }
 };
 

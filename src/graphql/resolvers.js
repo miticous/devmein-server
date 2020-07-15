@@ -73,8 +73,11 @@ const resolvers = {
     sendGeoLocation: async (_, args, { user: { _id } }) => {
       await updateProfileLocation({ ...args, userId: _id });
     },
-    saveConfigs: async (_, { maxDistance, searchGenre }, { user }) => {
-      await saveUserConfig({ maxDistance, searchGenre, user });
+    saveUserConfigs: async (_, data, { user }) => {
+      await saveUserConfig({
+        ...data,
+        user
+      });
     },
     addProfileImage: async (_, { file }, { user }) => {
       await addProfileImage({ file, user });

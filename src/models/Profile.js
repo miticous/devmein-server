@@ -62,23 +62,36 @@ export const profileSchema = mongoose.Schema({
   },
   genre: {
     type: String,
-    required: true,
-    validate: value => {
-      if (value !== 'MALE' && value !== 'FEMALE') {
-        throw new Error('Undefined genre is not alowed');
-      }
-    },
-    default: ''
+    enum: ['WOMAN', 'MAN', 'HUMAN'],
+    required: true
   },
-  sign: {
-    astralIndexes: {
+  sexualOrientations: [
+    {
+      type: String,
+      enum: [
+        'HETERO',
+        'GAY',
+        'LESBIAN',
+        'BISEXUAL',
+        'ASEXUAL',
+        'DEMISEXUAL',
+        'PANSEXUAL',
+        'QUEER',
+        'QUESTIONING',
+        'OTHER'
+      ],
+      required: true
+    }
+  ],
+  astral: {
+    indexes: {
+      type: String,
+      required: true
+    },
+    zodiac: {
       type: String,
       required: true
     }
-  },
-  astralIndexes: {
-    type: String,
-    required: true
   },
   eyes: {
     type: String,

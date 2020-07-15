@@ -29,7 +29,18 @@ const uploadProfileImages = async ({ file, filename }) => {
 };
 
 export const editProfile = async args => {
-  const { user, name, birthday, birthplace, occupation, eyes, graduation, residence } = args;
+  const {
+    user,
+    name,
+    birthday,
+    birthplace,
+    occupation,
+    eyes,
+    genre,
+    graduation,
+    residence,
+    sexualOrientations
+  } = args;
   const { lat, lng, UTC, placeId } = await getCitieById(birthplace.placeId);
 
   const formattedBirthDate = datetimeToBrasiliaUtc(birthday);
@@ -48,8 +59,10 @@ export const editProfile = async args => {
       {
         name,
         birthday: formattedBirthDate,
-        astralIndexes: instinto,
-        sign: zodiac,
+        astral: {
+          indexes: instinto,
+          zodiac
+        },
         birthplace: {
           description: birthplace.description,
           placeId,
@@ -58,6 +71,8 @@ export const editProfile = async args => {
         },
         occupation,
         eyes,
+        sexualOrientations,
+        genre,
         graduation: {
           ...graduation,
           placeId: graduation.description.length === 0 ? null : graduation.placeId

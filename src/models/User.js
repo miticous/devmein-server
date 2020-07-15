@@ -32,13 +32,24 @@ const userSchema = mongoose.Schema({
   configs: {
     maxDistance: {
       type: Number,
-      required: false,
+      required: true,
       default: 100
     },
-    searchGenre: {
-      type: String,
-      required: false,
-      default: ''
+    love: {
+      range: [Number],
+      genre: {
+        type: String,
+        enum: ['WOMAN', 'MAN', 'ALL'],
+        required: false
+      }
+    },
+    friendShip: {
+      range: [Number],
+      genre: {
+        type: String,
+        enum: ['WOMAN', 'MAN', 'ALL'],
+        required: false
+      }
     }
   }
 });

@@ -83,12 +83,22 @@ export const logout = async token => {
   return true;
 };
 
-export const saveUserConfig = async ({ user, maxDistance, searchGenre }) => {
+export const saveUserConfig = async ({
+  user,
+  maxDistance,
+  searchLoveAgeRange,
+  searchFriendAgeRange,
+  searchLoveGenre,
+  searchFriendGenre
+}) => {
   await User.findOneAndUpdate(
     { _id: user._id },
     {
       $set: {
-        'configs.searchGenre': searchGenre,
+        'configs.love.range': searchLoveAgeRange,
+        'configs.friendShip.range': searchFriendAgeRange,
+        'configs.love.genre': searchLoveGenre,
+        'configs.friendShip.genre': searchFriendGenre,
         'configs.maxDistance': maxDistance
       },
       hasProfile: true
