@@ -1,7 +1,7 @@
 import { PubSub } from 'apollo-server-express';
 import {
-  editProfile,
-  getProfilesToHome,
+  updateProfile,
+  getProfiles,
   updateProfileLocation,
   addProfileImage,
   removeProfileImage
@@ -36,8 +36,8 @@ const resolvers = {
       }
       return profile;
     },
-    home: async (_, __, { user }) => {
-      const profiles = await getProfilesToHome({ user });
+    profiles: async (_, { searchType }, { user }) => {
+      const profiles = await getProfiles({ user, searchType });
       return profiles;
     },
     chat: async (_, { matchId }, { user: { _id } }) => {
@@ -51,7 +51,7 @@ const resolvers = {
   },
   Mutation: {
     editProfile: async (_, args, { user }) => {
-      const profile = await editProfile({ user, ...args });
+      const profile = await updateProfile({ user, ...args });
       return profile;
     },
     sendMessage: async (_, { matchId, message }, { user: { _id } }) => {

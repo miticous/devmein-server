@@ -17,7 +17,7 @@ export default gql`
   type Query {
     user: User
     profile: Profile
-    home: [Profile]
+    profiles(searchType: String!): [Profile]
     chat(matchId: String): Chat
     matches: [Match]
   }

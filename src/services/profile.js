@@ -1,6 +1,7 @@
 import { ApolloError } from 'apollo-server-express';
 import { unlinkSync, writeFileSync } from 'fs';
 import path from 'path';
+import moment from 'moment';
 import mongoose from 'mongoose';
 import Profile from '../models/Profile';
 import bucket from '../storage';
@@ -28,7 +29,7 @@ const uploadProfileImages = async ({ file, filename }) => {
   return `https://firebasestorage.googleapis.com/v0/b/jintou-d0ad5.appspot.com/o/${filename}?alt=media&token`;
 };
 
-export const editProfile = async args => {
+export const updateProfile = async args => {
   const {
     user,
     name,
@@ -41,6 +42,7 @@ export const editProfile = async args => {
     residence,
     sexualOrientations
   } = args;
+
   const { lat, lng, UTC, placeId } = await getCitieById(birthplace.placeId);
 
   const formattedBirthDate = datetimeToBrasiliaUtc(birthday);
@@ -91,31 +93,17 @@ export const editProfile = async args => {
   }
 };
 
-const getProfilesWithConditions = async ({ interactions, maxDistance, userLocation, genre }) => {
-  const profiles = await Profile.find({
-    $and: [
-      {
-        _id: { $nin: interactions },
-        loc: {
-          $near: {
-            $geometry: {
-              type: 'Point',
-              coordinates: userLocation
-            },
-            $maxDistance: maxDistance * 1110.12 || 100
-          }
-        },
-        genre
-      }
-    ]
-  });
-  return profiles;
+const getWantedGenres = ({ userFavoriteGenre }) => {
+  if (userFavoriteGenre === 'ALL') {
+    return ['MAN', 'WOMAN', 'HUMAN'];
+  }
+  return [userFavoriteGenre];
 };
 
-export const getProfilesToHome = async ({ user }) => {
+export const getProfiles = async ({ user, searchType }) => {
   const {
     _id,
-    configs: { maxDistance, searchGenre }
+    configs: { maxDistance, love, friendShip }
   } = user;
   const {
     loc: { coordinates }
@@ -123,12 +111,38 @@ export const getProfilesToHome = async ({ user }) => {
 
   const profilesUnlikedByUser = await getUnlikesByUserId({ userId: _id });
   const profilesLikedByUser = await getLikesByUserId({ userId: _id });
+  const wantedGenres = getWantedGenres({
+    userFavoriteGenre: searchType === 'LOVE' ? love.genre : friendShip.genre
+  });
+  const startAge = searchType === 'LOVE' ? love.range[0] : friendShip.range[0];
+  const endAge = searchType === 'LOVE' ? love.range[1] : friendShip.range[1];
+  const startBirthday = moment()
+    .subtract(startAge, 'years')
+    .toISOString();
+  const endBirthDay = moment()
+    .subtract(endAge, 'years')
+    .toISOString();
 
-  const profiles = await getProfilesWithConditions({
-    interactions: [...profilesUnlikedByUser, ...profilesLikedByUser, _id],
-    userLocation: coordinates,
-    maxDistance,
-    genre: searchGenre
+  const profiles = await Profile.find({
+    $and: [
+      {
+        _id: { $nin: [...profilesUnlikedByUser, ...profilesLikedByUser, _id] },
+        loc: {
+          $near: {
+            $geometry: {
+              type: 'Point',
+              coordinates
+            },
+            $maxDistance: maxDistance * 1110.12
+          }
+        },
+        genre: { $in: [...wantedGenres] },
+        birthday: {
+          $gte: endBirthDay,
+          $lt: startBirthday
+        }
+      }
+    ]
   });
 
   return profiles;
@@ -140,7 +154,8 @@ export const updateProfileLocation = async ({ latitude, longitude, userId }) => 
     {
       loc: {
         type: 'Point',
-        coordinates: [parseFloat(longitude), parseFloat(latitude)]
+        // coordinates: [parseFloat(longitude), parseFloat(latitude)]
+        coordinates: [-49.3192887, -16.6742216]
       }
     },
     { new: true, upsert: true }

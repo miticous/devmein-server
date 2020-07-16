@@ -100,7 +100,7 @@ export const saveUserConfig = async ({
         'configs.friendShip.range': searchFriendAgeRange,
         'configs.love.genre': searchLoveGenre,
         'configs.friendShip.genre': searchFriendGenre,
-        'configs.maxDistance': maxDistance
+        'configs.maxDistance': maxDistance || 100
       },
       profileStatus
     }
