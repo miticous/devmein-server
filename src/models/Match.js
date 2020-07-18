@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { profileSchema } from './Profile';
 import { getServerDate } from '../util';
 
 const matchSchema = mongoose.Schema({
@@ -9,7 +8,11 @@ const matchSchema = mongoose.Schema({
     required: false,
     default: () => getServerDate()
   },
-  matches: [profileSchema],
+  matches: [
+    {
+      _id: mongoose.Schema.Types.ObjectId
+    }
+  ],
   lastMessage: {
     sender_id: {
       type: String,
@@ -31,6 +34,11 @@ const matchSchema = mongoose.Schema({
       type: Boolean,
       required: false
     }
+  },
+  type: {
+    type: String,
+    enum: ['LOVE', 'FRIENDSHIP', 'BOTH'],
+    required: true
   }
 });
 

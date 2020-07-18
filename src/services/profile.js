@@ -109,8 +109,8 @@ export const getProfiles = async ({ user, searchType }) => {
     loc: { coordinates }
   } = await Profile.findOne({ _id: user._id }, { loc: 1, _id: 0 });
 
-  const profilesUnlikedByUser = await getUnlikesByUserId({ userId: _id });
-  const profilesLikedByUser = await getLikesByUserId({ userId: _id });
+  const profilesUnlikedByUser = await getUnlikesByUserId({ userId: _id, type: searchType });
+  const profilesLikedByUser = await getLikesByUserId({ userId: _id, type: searchType });
   const wantedGenres = getWantedGenres({
     userFavoriteGenre: searchType === 'LOVE' ? love.genre : friendShip.genre
   });

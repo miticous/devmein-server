@@ -98,7 +98,7 @@ export default gql`
   type Match {
     _id: String
     startedAt: String
-    matches: [Profile]
+    profileMatched: Profile
     lastMessage: Message
   }
   type Mutation {
@@ -114,8 +114,8 @@ export default gql`
       residence: ResidenceInput
     ): Profile
     sendMessage(matchId: String!, message: String!): Chat
-    likeSomeone(userLikedId: String!): Match
-    unlikeSomeone(userUnlikedId: String!): String
+    likeSomeone(userLikedId: String!, type: String!): Profile
+    unlikeSomeone(userUnlikedId: String!, type: String!): String
     sendGeoLocation(latitude: String!, longitude: String!): String
     saveUserConfigs(
       maxDistance: String

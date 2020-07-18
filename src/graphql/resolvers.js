@@ -10,9 +10,9 @@ import Profile from '../models/Profile';
 import { sendMessage } from '../services/chat';
 import Chat from '../models/Chat';
 import { like } from '../services/like';
-import Match from '../models/Match';
 import { unlike } from '../services/unlike';
 import { saveUserConfig } from '../services/user';
+import { getMatchesByUserId } from '../services/match';
 
 const pubsub = new PubSub();
 
@@ -45,7 +45,8 @@ const resolvers = {
       return chat;
     },
     matches: async (_, __, { user: { _id } }) => {
-      const matches = await Match.find({ 'matches._id': _id });
+      const matches = await getMatchesByUserId({ userId: _id });
+
       return matches;
     }
   },
@@ -63,12 +64,12 @@ const resolvers = {
 
       return chat;
     },
-    likeSomeone: async (_, { userLikedId }, { user }) => {
-      const match = await like({ userLikedId, user });
+    likeSomeone: async (_, { userLikedId, type }, { user }) => {
+      const match = await like({ userLikedId, user, type });
       return match;
     },
-    unlikeSomeone: async (_, { userUnlikedId }, { user }) => {
-      await unlike({ user, userUnlikedId });
+    unlikeSomeone: async (_, { userUnlikedId, type }, { user }) => {
+      await unlike({ user, userUnlikedId, type });
     },
     sendGeoLocation: async (_, args, { user: { _id } }) => {
       await updateProfileLocation({ ...args, userId: _id });
