@@ -7,8 +7,7 @@ import {
   removeProfileImage
 } from '../services/profile';
 import Profile from '../models/Profile';
-import { sendMessage } from '../services/chat';
-import Chat from '../models/Chat';
+import { sendMessage, getChat } from '../services/chat';
 import { like } from '../services/like';
 import { unlike } from '../services/unlike';
 import { saveUserConfig } from '../services/user';
@@ -40,8 +39,9 @@ const resolvers = {
       const profiles = await getProfiles({ user, searchType });
       return profiles;
     },
-    chat: async (_, { matchId }, { user: { _id } }) => {
-      const chat = await Chat.findOne({ _id: matchId, 'participants._id': _id });
+    chat: async (_, { matchId }, { user }) => {
+      const chat = await getChat({ chatId: matchId, user });
+
       return chat;
     },
     matches: async (_, __, { user: { _id } }) => {
@@ -55,8 +55,8 @@ const resolvers = {
       const profile = await updateProfile({ user, ...args });
       return profile;
     },
-    sendMessage: async (_, { matchId, message }, { user: { _id } }) => {
-      const chat = await sendMessage({ matchId, senderId: _id, message });
+    sendMessage: async (_, { matchId, message }, { user }) => {
+      const chat = await sendMessage({ matchId, sender: user, message });
 
       await pubsub.publish(UPDATE_CHAT, {
         updateChat: chat

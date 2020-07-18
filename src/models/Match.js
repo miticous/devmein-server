@@ -13,12 +13,17 @@ const matchSchema = mongoose.Schema({
       _id: mongoose.Schema.Types.ObjectId
     }
   ],
+  unreadMessages: {
+    type: Number,
+    required: true,
+    default: 0
+  },
   lastMessage: {
-    sender_id: {
+    senderId: {
       type: String,
       required: false
     },
-    receiver_id: {
+    receiverId: {
       type: String,
       required: false
     },
@@ -28,10 +33,6 @@ const matchSchema = mongoose.Schema({
     },
     text: {
       type: String,
-      required: false
-    },
-    viewed: {
-      type: Boolean,
       required: false
     }
   },
@@ -43,9 +44,6 @@ const matchSchema = mongoose.Schema({
 });
 
 matchSchema.pre('save', function() {
-  if (!this.chat) {
-    this.chat = null;
-  }
   if (!this._id) {
     const id = new mongoose.Types.ObjectId();
     this._id = id;

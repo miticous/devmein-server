@@ -18,7 +18,7 @@ export default gql`
     user: User
     profile: Profile
     profiles(searchType: String!): [Profile]
-    chat(matchId: String): Chat
+    chat(matchId: String!): Chat
     matches: [Match]
   }
   type Love {
@@ -83,8 +83,8 @@ export default gql`
   }
   type Message {
     _id: String
-    sender_id: String
-    receiver_id: String
+    senderId: String
+    receiverId: String
     sentAt: String
     text: String
     viewed: Boolean
@@ -92,7 +92,7 @@ export default gql`
   type Chat {
     _id: String
     startedAt: String
-    participants: [Profile]
+    participant: Profile
     messages: [Message]
   }
   type Match {
@@ -100,6 +100,8 @@ export default gql`
     startedAt: String
     profileMatched: Profile
     lastMessage: Message
+    unreadMessages: String
+    type: String!
   }
   type Mutation {
     editProfile(
