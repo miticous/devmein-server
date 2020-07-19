@@ -54,11 +54,14 @@ export const like = async ({ userLikedId, user, type }) => {
 
   const userLikedProfile = await Profile.findById(userLikedId);
   const userLikerProfile = await Profile.findById(user._id);
-  const userLikedLike = await Like.findOne({ _id: userLikedId });
 
   if (!userLikedProfile || !userLikerProfile) {
     throw new Error('An error occur while trying to get both profiles');
   }
+
+  const userLikedLike = await Like.findOne({
+    $and: [{ _id: userLikedId }, { 'likes._id': user?._id }]
+  });
 
   try {
     const userLikerLike = await Like.findOneAndUpdate(
@@ -66,6 +69,10 @@ export const like = async ({ userLikedId, user, type }) => {
       { $addToSet: { likes: { _id: userLikedId, type } } },
       { new: true, upsert: true }
     );
+
+    if (!userLikedLike) {
+      return false;
+    }
 
     const matchType = verifyMatch({ ...getLikeTypes({ userLikerLike, userLikedLike }) });
 
@@ -76,6 +83,10 @@ export const like = async ({ userLikedId, user, type }) => {
     return false;
   } catch (error) {
     const userLikerLike = await updateLike({ user, userLikedId, type });
+
+    if (!userLikedLike) {
+      return false;
+    }
 
     const matchType = verifyMatch({ ...getLikeTypes({ userLikerLike, userLikedLike }) });
 

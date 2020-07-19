@@ -131,6 +131,6 @@ export default gql`
     removeProfileImage(imageId: String!): String
   }
   type Subscription {
-    updateChat: Chat
+    newMessage: Chat
   }
 `;

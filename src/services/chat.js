@@ -22,15 +22,32 @@ export const sendMessage = async ({ matchId, sender, message }) => {
     text: message
   };
 
-  const chat = await Chat.findOneAndUpdate(
+  await Chat.findOneAndUpdate(
     { _id: match._id },
-    { $addToSet: { participants: match.matches, messages: newMessage } },
+    {
+      $addToSet: { participants: match.matches, messages: newMessage }
+    },
     { new: true, upsert: true }
   );
 
+  const chat = await Chat.findOneAndUpdate(
+    {
+      $and: [{ _id: matchId }, { 'participants._id': { $eq: sender?._id } }]
+    },
+    {
+      $set: { 'messages.$[el].viewed': true }
+    },
+    {
+      arrayFilters: [{ 'el.senderId': receiverId?._id }],
+      new: true
+    }
+  );
+
+  const unreadMessagesCount = chat?.messages?.filter(_message => _message?.viewed === false);
+
   await match.update({
     lastMessage: newMessage,
-    unreadMessages: match.unreadMessages + 1
+    unreadMessages: unreadMessagesCount?.length
   });
 
   return chat;
@@ -40,18 +57,45 @@ export const getChat = async ({ chatId, user }) => {
   try {
     const chat = await Chat.findOne({ $and: [{ _id: chatId }, { 'participants._id': user._id }] });
 
-    const participant = chat.participants.find(
+    const participant = chat?.participants?.find(
       _participant => _participant._id.toString() !== user._id.toString()
     );
 
+    const _chat = await Chat.findOneAndUpdate(
+      {
+        $and: [{ _id: chatId }, { 'participants._id': { $eq: user?._id } }]
+      },
+      {
+        $set: { 'messages.$[el].viewed': true }
+      },
+      {
+        arrayFilters: [{ 'el.senderId': participant?._id }],
+        new: true
+      }
+    );
+
+    const lastMessageSenderId = _chat?.messages?.[_chat?.messages?.length - 1].senderId;
+
+    if (lastMessageSenderId.toString() === participant?._id?.toString()) {
+      await Match.findOneAndUpdate(
+        { $and: [{ _id: chatId }, { 'matches._id': user._id }] },
+        {
+          $set: { unreadMessages: 0 }
+        },
+        {
+          new: true
+        }
+      );
+    }
+
     const participantProfile = await Profile.findById(participant);
 
-    const _chat = {
-      ...chat.toObject(),
+    const __chat = {
+      ..._chat?.toObject(),
       participant: participantProfile
     };
 
-    return _chat;
+    return __chat;
   } catch (error) {
     throw new Error(error);
   }

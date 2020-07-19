@@ -1,4 +1,3 @@
-import { PubSub } from 'apollo-server-express';
 import {
   updateProfile,
   getProfiles,
@@ -13,14 +12,12 @@ import { unlike } from '../services/unlike';
 import { saveUserConfig } from '../services/user';
 import { getMatchesByUserId } from '../services/match';
 
-const pubsub = new PubSub();
-
-const UPDATE_CHAT = 'UPDATE_CHAT';
+const NEW_MESSAGE = 'NEW_MESSAGE';
 
 const resolvers = {
   Subscription: {
-    updateChat: {
-      subscribe: () => pubsub.asyncIterator([UPDATE_CHAT])
+    newMessage: {
+      subscribe: (_, __, { pubsub }) => pubsub.asyncIterator([NEW_MESSAGE])
     }
   },
   Query: {
@@ -55,11 +52,10 @@ const resolvers = {
       const profile = await updateProfile({ user, ...args });
       return profile;
     },
-    sendMessage: async (_, { matchId, message }, { user }) => {
+    sendMessage: async (_, { matchId, message }, { user, pubsub }) => {
       const chat = await sendMessage({ matchId, sender: user, message });
-
-      await pubsub.publish(UPDATE_CHAT, {
-        updateChat: chat
+      await pubsub.publish(NEW_MESSAGE, {
+        newMessage: chat
       });
 
       return chat;
