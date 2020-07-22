@@ -62,9 +62,16 @@ export default gql`
     description: String
     placeId: String
   }
+  type Text {
+    text: String!
+    title: String!
+    subtitle: String!
+  }
   type Astral {
     indexes: String
     zodiac: String
+    mandala: String
+    texts: [Text]!
   }
   type Profile {
     _id: String

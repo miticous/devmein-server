@@ -84,14 +84,8 @@ export const profileSchema = mongoose.Schema({
     }
   ],
   astral: {
-    indexes: {
-      type: String,
-      required: true
-    },
-    zodiac: {
-      type: String,
-      required: true
-    }
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Astral'
   },
   eyes: {
     type: String,
