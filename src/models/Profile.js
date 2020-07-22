@@ -29,6 +29,7 @@ export const profileSchema = mongoose.Schema({
   },
   images: [
     {
+      _id: mongoose.Schema.Types.ObjectId,
       image: {
         type: String,
         required: false
@@ -55,6 +56,65 @@ export const profileSchema = mongoose.Schema({
       required: true
     },
     lng: {
+      type: String,
+      required: true
+    }
+  },
+  genre: {
+    type: String,
+    enum: ['WOMAN', 'MAN', 'HUMAN'],
+    required: true
+  },
+  sexualOrientations: [
+    {
+      type: String,
+      enum: [
+        'HETERO',
+        'GAY',
+        'LESBIAN',
+        'BISEXUAL',
+        'ASEXUAL',
+        'DEMISEXUAL',
+        'PANSEXUAL',
+        'QUEER',
+        'QUESTIONING',
+        'OTHER'
+      ],
+      required: true
+    }
+  ],
+  astral: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Astral'
+  },
+  eyes: {
+    type: String,
+    required: true
+  },
+  graduation: {
+    class: {
+      type: String,
+      required: true
+    },
+    description: {
+      type: String,
+      required: true
+    },
+    placeId: {
+      type: String,
+      required: true
+    }
+  },
+  occupation: {
+    type: String,
+    required: true
+  },
+  residence: {
+    description: {
+      type: String,
+      required: true
+    },
+    placeId: {
       type: String,
       required: true
     }

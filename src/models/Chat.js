@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import { getServerDate } from '../util';
-import { profileSchema } from './Profile';
 
 export const chatSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
@@ -9,14 +8,18 @@ export const chatSchema = mongoose.Schema({
     required: false,
     default: () => getServerDate()
   },
-  participants: [profileSchema],
+  participants: [
+    {
+      _id: mongoose.Schema.Types.ObjectId
+    }
+  ],
   messages: [
     {
-      sender_id: {
+      senderId: {
         type: String,
         required: true
       },
-      receiver_id: {
+      receiverId: {
         type: String,
         required: true
       },
@@ -39,9 +42,6 @@ export const chatSchema = mongoose.Schema({
 });
 
 chatSchema.pre('save', function() {
-  if (!this._id) {
-    this._id = new mongoose.Types.ObjectId();
-  }
   this.messages = this.messages.map((message, index) => {
     if (!this.messages[index]._id) {
       this.messages[index]._id = new mongoose.Types.ObjectId();

@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { profileSchema } from './Profile';
 import { getServerDate } from '../util';
 
 const matchSchema = mongoose.Schema({
@@ -9,37 +8,42 @@ const matchSchema = mongoose.Schema({
     required: false,
     default: () => getServerDate()
   },
-  matches: [profileSchema],
+  matches: [
+    {
+      _id: mongoose.Schema.Types.ObjectId
+    }
+  ],
+  unreadMessages: {
+    type: Number,
+    required: true,
+    default: 0
+  },
   lastMessage: {
-    sender_id: {
+    senderId: {
       type: String,
       required: false
     },
-    receiver_id: {
+    receiverId: {
       type: String,
       required: false
     },
     sentAt: {
       type: Date,
-      required: true,
-      default: () => getServerDate()
+      required: false
     },
     text: {
       type: String,
       required: false
-    },
-    viewed: {
-      type: Boolean,
-      required: false,
-      default: false
     }
+  },
+  type: {
+    type: String,
+    enum: ['LOVE', 'FRIENDSHIP', 'BOTH'],
+    required: true
   }
 });
 
 matchSchema.pre('save', function() {
-  if (!this.chat) {
-    this.chat = null;
-  }
   if (!this._id) {
     const id = new mongoose.Types.ObjectId();
     this._id = id;

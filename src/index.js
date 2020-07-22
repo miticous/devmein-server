@@ -1,5 +1,5 @@
 import express from 'express';
-import { ApolloServer } from 'apollo-server-express';
+import { ApolloServer, PubSub } from 'apollo-server-express';
 import { createServer } from 'http';
 import bodyParser from 'body-parser';
 import jwt from 'jsonwebtoken';
@@ -11,6 +11,8 @@ import ERROR_MESSAGES from './constants/errorMessages';
 import User from './models/User';
 
 require('./database');
+
+const pubsub = new PubSub();
 
 const context = async ({ req, connection }) => {
   if (connection) {
@@ -26,14 +28,30 @@ const context = async ({ req, connection }) => {
   }
   return {
     authorization: req.headers.authorization,
-    user
+    user,
+    pubsub
   };
 };
 
 const apolloServer = new ApolloServer({
   typeDefs,
   resolvers,
-  context
+  context,
+  subscriptions: {
+    onConnect: async connectionParams => {
+      const { _id: userId } = jwt.verify(connectionParams.token, process.env.JWT_KEY);
+      const user = await User.findById(userId);
+      if (!user) {
+        throw new Error('Invalid credentials');
+      }
+
+      return {
+        user,
+        pubsub
+      };
+    },
+    onDisconnect: () => {}
+  }
 });
 
 const app = express();

@@ -5,7 +5,12 @@ export const likeSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId, // SO, THIS WILL BE ME USERID
   likes: [
     {
-      _id: mongoose.Schema.Types.ObjectId
+      _id: mongoose.Schema.Types.ObjectId,
+      type: {
+        type: String,
+        enum: ['LOVE', 'FRIENDSHIP', 'BOTH'],
+        required: true
+      }
     }
   ]
 });

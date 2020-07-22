@@ -4,11 +4,6 @@ import validator from 'validator';
 
 const userSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
-  name: {
-    type: String,
-    required: true,
-    trim: true
-  },
   email: {
     type: String,
     required: true,
@@ -29,10 +24,34 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  hasProfile: {
-    type: Boolean,
+  profileStatus: {
+    type: String,
+    enum: ['PENDING', 'CREATION', 'COMPLETED'],
     required: true,
-    default: false
+    default: 'PENDING'
+  },
+  configs: {
+    maxDistance: {
+      type: Number,
+      required: true,
+      default: 100
+    },
+    love: {
+      range: [Number],
+      genre: {
+        type: String,
+        enum: ['WOMAN', 'MAN', 'ALL'],
+        required: false
+      }
+    },
+    friendShip: {
+      range: [Number],
+      genre: {
+        type: String,
+        enum: ['WOMAN', 'MAN', 'ALL'],
+        required: false
+      }
+    }
   }
 });
 

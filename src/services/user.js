@@ -6,26 +6,22 @@ import User from '../models/User';
 import ERROR_MESSAGES from '../constants/errorMessages';
 
 export const registerUser = async args => {
-  const encryptedPassword = await bcrypt.hash(args.password.toString(), 8);
-  const id = new mongoose.Types.ObjectId();
-  const user = new User({
-    _id: id,
-    ...args,
-    password: encryptedPassword,
-    token: jwt.sign({ _id: id }, process.env.JWT_KEY)
-  });
+  try {
+    const encryptedPassword = await bcrypt.hash(args.password.toString(), 8);
+    const id = new mongoose.Types.ObjectId();
+    const user = new User({
+      _id: id,
+      email: args.email,
+      password: encryptedPassword,
+      token: jwt.sign({ _id: id }, process.env.JWT_KEY)
+    });
 
-  const data = await user.save().catch(err => {
-    if (err.errmsg) {
-      throw ERROR_MESSAGES.USER_ALREADY_EXISTS;
-    }
-    if (err.message) {
-      throw ERROR_MESSAGES.INVALID_DATA_FIELDS;
-    }
-    return err;
-  });
+    const data = await user.save();
 
-  return data;
+    return data;
+  } catch (error) {
+    throw new Error('User already exists');
+  }
 };
 
 export const login = async args => {
@@ -48,9 +44,9 @@ export const login = async args => {
     { new: true }
   );
 
-  const { hasProfile, _id, name, email, token } = updatedUser;
+  const { profileStatus, _id, name, email, token } = updatedUser;
 
-  return { _id, name, email, token, hasProfile };
+  return { _id, name, email, token, profileStatus };
 };
 
 export const auth = async ({ userId, token }) => {
@@ -59,7 +55,7 @@ export const auth = async ({ userId, token }) => {
   if (!user) {
     throw ERROR_MESSAGES.AUTHENTICATION_FAILED;
   }
-  return user.hasProfile;
+  return user.profileStatus;
 };
 
 export const logout = async token => {
@@ -84,5 +80,31 @@ export const logout = async token => {
   if (!user) {
     throw ERROR_MESSAGES.LOGOUT_FAILED;
   }
+  return true;
+};
+
+export const saveUserConfig = async ({
+  user,
+  maxDistance,
+  searchLoveAgeRange,
+  searchFriendAgeRange,
+  searchLoveGenre,
+  searchFriendGenre,
+  profileStatus
+}) => {
+  await User.findOneAndUpdate(
+    { _id: user._id },
+    {
+      $set: {
+        'configs.love.range': searchLoveAgeRange,
+        'configs.friendShip.range': searchFriendAgeRange,
+        'configs.love.genre': searchLoveGenre,
+        'configs.friendShip.genre': searchFriendGenre,
+        'configs.maxDistance': maxDistance || 100
+      },
+      profileStatus
+    }
+  );
+
   return true;
 };
