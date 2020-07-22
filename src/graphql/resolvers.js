@@ -26,7 +26,8 @@ const resolvers = {
       return { configs, profileStatus };
     },
     profile: async (_, __, { user: { _id } }) => {
-      const profile = await Profile.findById(_id);
+      const profile = await Profile.findById(_id).populate({ path: 'astral', model: 'Astral' });
+
       if (!profile) {
         return {};
       }

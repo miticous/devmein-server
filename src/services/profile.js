@@ -6,11 +6,12 @@ import mongoose from 'mongoose';
 import Profile from '../models/Profile';
 import bucket from '../storage';
 import ERROR_MESSAGES from '../constants/errorMessages';
-import { getAstralMapIndexes } from './astrology';
+import { getAstral } from './astrology';
 import { datetimeToBrasiliaUtc, formatUtcOffset } from '../util';
 import { getUnlikesByUserId } from './unlike';
 import { getLikesByUserId } from './like';
 import { getCitieById } from './google-apis';
+import { updateAstral } from './astral';
 
 const uploadProfileImages = async ({ file, filename }) => {
   const tempPath = path.join(__dirname, './', filename);
@@ -47,7 +48,7 @@ export const updateProfile = async args => {
 
   const formattedBirthDate = datetimeToBrasiliaUtc(birthday);
 
-  const { zodiac, instinto } = await getAstralMapIndexes({
+  const { chart_id: chartId, zodiac, instinto, mandala } = await getAstral({
     name,
     birthdate: new Date(formattedBirthDate),
     latitude: lat,
@@ -55,16 +56,15 @@ export const updateProfile = async args => {
     birthplaceFuso: formatUtcOffset(UTC)
   });
 
+  const databaseChartId = await updateAstral({ chartId, zodiac, instinto, mandala });
+
   try {
     const profile = await Profile.findOneAndUpdate(
       { _id: user._id },
       {
         name,
-        birthday: formattedBirthDate,
-        astral: {
-          indexes: instinto,
-          zodiac
-        },
+        birthday: new Date(formattedBirthDate),
+        astral: databaseChartId,
         birthplace: {
           description: birthplace.description,
           placeId,
@@ -125,8 +125,8 @@ export const getProfiles = async ({ user, searchType }) => {
 
   const profiles = await Profile.find({
     $and: [
+      { _id: { $nin: [...profilesUnlikedByUser, ...profilesLikedByUser, _id] } },
       {
-        _id: { $nin: [...profilesUnlikedByUser, ...profilesLikedByUser, _id] },
         loc: {
           $near: {
             $geometry: {
@@ -135,15 +135,19 @@ export const getProfiles = async ({ user, searchType }) => {
             },
             $maxDistance: maxDistance * 1110.12
           }
-        },
-        genre: { $in: [...wantedGenres] },
+        }
+      },
+      { genre: { $in: [...wantedGenres] } },
+      {
         birthday: {
           $gte: endBirthDay,
           $lt: startBirthday
         }
       }
     ]
-  });
+  })
+    .populate({ path: 'astral', model: 'Astral' })
+    .exec();
 
   return profiles;
 };
@@ -154,8 +158,7 @@ export const updateProfileLocation = async ({ latitude, longitude, userId }) => 
     {
       loc: {
         type: 'Point',
-        // coordinates: [parseFloat(longitude), parseFloat(latitude)]
-        coordinates: [-49.3192887, -16.6742216]
+        coordinates: [parseFloat(longitude), parseFloat(latitude)]
       }
     },
     { new: true, upsert: true }
