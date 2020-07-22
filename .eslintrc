@@ -6,10 +6,12 @@
     "plugin:jsx-a11y/recommended"
   ],
   "plugins": ["react", "react-native", "prettier", "jsx-a11y"],
+  "parser": "babel-eslint",
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true,
-      "modules": true
+      "modules": true,
+      "ecmaVersion": "es2020"
     }
   },
   "rules": {

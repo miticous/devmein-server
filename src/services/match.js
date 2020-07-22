@@ -1,27 +1,69 @@
+/* eslint-disable no-await-in-loop */
 import Match from '../models/Match';
+import Profile from '../models/Profile';
 
-export const createMatch = async ({ userLikedProfile, userLikerProfile }) => {
-  const isMatchAlreadyCreated = await Match.findOne({
-    $and: [{ 'matches._id': userLikerProfile._id }, { 'matches._id': userLikedProfile._id }]
-  });
+export const verifyMatch = ({ userLikerLikeType, userLikedLikeType }) => {
+  if (userLikedLikeType === userLikerLikeType) {
+    return userLikedLikeType;
+  }
+  if (userLikedLikeType === 'BOTH' || userLikerLikeType === 'BOTH') {
+    const matchType = [userLikerLikeType, userLikedLikeType].find(type => type !== 'BOTH');
 
-  if (isMatchAlreadyCreated) {
-    throw new Error('Users already been matched');
+    return matchType;
   }
 
-  const match = new Match({
-    matches: [userLikedProfile, userLikerProfile]
-  });
-  const newMatch = await match.save();
-
-  return newMatch;
+  return null;
 };
 
-export const getMatchesByUserId = async ({ _id }) => {
+export const createMatch = async ({ userLikedId, userLikerId, type, userLikedProfile }) => {
+  const match = await Match.findOne({
+    $and: [{ 'matches._id': userLikedId }, { 'matches._id': userLikerId }]
+  });
+
+  if (match) {
+    const _match = await Match.findOneAndUpdate(
+      { _id: match._id },
+      {
+        type
+      },
+      {
+        new: true
+      }
+    );
+
+    return _match;
+  }
+
+  const _match = new Match({
+    matches: [{ _id: userLikerId }, { _id: userLikedId }],
+    type
+  });
+
+  await _match.save();
+
+  return userLikedProfile;
+};
+
+export const getMatchesByUserId = async ({ userId }) => {
   try {
-    const matches = await Match.find({ 'matches._id': _id });
-    return matches;
+    const userMatches = await Match.find({ 'matches._id': userId });
+
+    const _userMatches = [];
+
+    for (let i = 0; i < userMatches.length; i += 1) {
+      const matchedId = userMatches[i].matches.find(
+        _match => _match._id.toString() !== userId.toString()
+      );
+      const profiledMatched = await Profile.findOne({ _id: matchedId });
+
+      _userMatches.push({
+        ...userMatches[i].toObject(),
+        profileMatched: profiledMatched.toObject()
+      });
+    }
+
+    return _userMatches;
   } catch (error) {
-    return [];
+    throw new Error(error);
   }
 };

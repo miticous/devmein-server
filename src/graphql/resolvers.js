@@ -1,74 +1,87 @@
-import { PubSub } from 'apollo-server-express';
-import { createProfile, getProfilesToHome, updateProfileLocation } from '../services/profile';
+import {
+  updateProfile,
+  getProfiles,
+  updateProfileLocation,
+  addProfileImage,
+  removeProfileImage
+} from '../services/profile';
 import Profile from '../models/Profile';
-import { sendMessage } from '../services/chat';
-import Chat from '../models/Chat';
+import { sendMessage, getChat } from '../services/chat';
 import { like } from '../services/like';
-import Match from '../models/Match';
 import { unlike } from '../services/unlike';
 import { saveUserConfig } from '../services/user';
+import { getMatchesByUserId } from '../services/match';
 
-const pubsub = new PubSub();
-
-const UPDATE_CHAT = 'UPDATE_CHAT';
+const NEW_MESSAGE = 'NEW_MESSAGE';
 
 const resolvers = {
   Subscription: {
-    updateChat: {
-      subscribe: () => pubsub.asyncIterator([UPDATE_CHAT])
+    newMessage: {
+      subscribe: (_, __, { pubsub }) => pubsub.asyncIterator([NEW_MESSAGE])
     }
   },
   Query: {
     user: async (_, __, { user }) => {
-      const { name, email, configs } = user;
-      return { name, email, configs };
+      const { configs, profileStatus } = user;
+      return { configs, profileStatus };
     },
     profile: async (_, __, { user: { _id } }) => {
-      const profile = await Profile.findById(_id);
+      const profile = await Profile.findById(_id).populate({ path: 'astral', model: 'Astral' });
+
       if (!profile) {
         return {};
       }
       return profile;
     },
-    home: async (_, __, { user }) => {
-      const profiles = await getProfilesToHome({ user });
+    profiles: async (_, { searchType }, { user }) => {
+      const profiles = await getProfiles({ user, searchType });
       return profiles;
     },
-    chat: async (_, { matchId }, { user: { _id } }) => {
-      const chat = await Chat.findOne({ _id: matchId, 'participants._id': _id });
+    chat: async (_, { matchId }, { user }) => {
+      const chat = await getChat({ chatId: matchId, user });
+
       return chat;
     },
     matches: async (_, __, { user: { _id } }) => {
-      const matches = await Match.find({ 'matches._id': _id });
+      const matches = await getMatchesByUserId({ userId: _id });
+
       return matches;
     }
   },
   Mutation: {
-    createProfile: async (_, args, { user }) => {
-      const profile = await createProfile({ user, ...args });
+    editProfile: async (_, args, { user }) => {
+      const profile = await updateProfile({ user, ...args });
       return profile;
     },
-    sendMessage: async (_, { matchId, message }, { user: { _id } }) => {
-      const chat = await sendMessage({ matchId, senderId: _id, message });
-
-      await pubsub.publish(UPDATE_CHAT, {
-        updateChat: chat
+    sendMessage: async (_, { matchId, message }, { user, pubsub }) => {
+      const chat = await sendMessage({ matchId, sender: user, message });
+      await pubsub.publish(NEW_MESSAGE, {
+        newMessage: chat
       });
 
       return chat;
     },
-    likeSomeone: async (_, { userLikedId }, { user }) => {
-      const match = await like({ userLikedId, user });
+    likeSomeone: async (_, { userLikedId, type }, { user }) => {
+      const match = await like({ userLikedId, user, type });
       return match;
     },
-    unlikeSomeone: async (_, { userUnlikedId }, { user }) => {
-      await unlike({ user, userUnlikedId });
+    unlikeSomeone: async (_, { userUnlikedId, type }, { user }) => {
+      await unlike({ user, userUnlikedId, type });
     },
     sendGeoLocation: async (_, args, { user: { _id } }) => {
       await updateProfileLocation({ ...args, userId: _id });
     },
-    saveConfigs: async (_, { maxDistance, searchGenre }, { user }) => {
-      await saveUserConfig({ maxDistance, searchGenre, user });
+    saveUserConfigs: async (_, data, { user }) => {
+      await saveUserConfig({
+        ...data,
+        user
+      });
+    },
+    addProfileImage: async (_, { file }, { user }) => {
+      await addProfileImage({ file, user });
+    },
+    removeProfileImage: async (_, { imageId }, { user }) => {
+      await removeProfileImage({ imageId, user });
     }
   }
 };

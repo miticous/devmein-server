@@ -24,21 +24,33 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  hasProfile: {
-    type: Boolean,
+  profileStatus: {
+    type: String,
+    enum: ['PENDING', 'CREATION', 'COMPLETED'],
     required: true,
-    default: false
+    default: 'PENDING'
   },
   configs: {
     maxDistance: {
       type: Number,
-      required: false,
+      required: true,
       default: 100
     },
-    searchGenre: {
-      type: String,
-      required: false,
-      default: ''
+    love: {
+      range: [Number],
+      genre: {
+        type: String,
+        enum: ['WOMAN', 'MAN', 'ALL'],
+        required: false
+      }
+    },
+    friendShip: {
+      range: [Number],
+      genre: {
+        type: String,
+        enum: ['WOMAN', 'MAN', 'ALL'],
+        required: false
+      }
     }
   }
 });

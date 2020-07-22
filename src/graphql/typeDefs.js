@@ -4,24 +4,40 @@ export default gql`
   input BirthplaceInput {
     placeId: String!
     description: String!
-    lat: String!
-    lng: String!
-    UTC: String!
+  }
+  input GraduationInput {
+    class: String
+    description: String
+    placeId: String
+  }
+  input ResidenceInput {
+    description: String
+    placeId: String
   }
   type Query {
     user: User
     profile: Profile
-    home: [Profile]
-    chat(matchId: String): Chat
+    profiles(searchType: String!): [Profile]
+    chat(matchId: String!): Chat
     matches: [Match]
   }
+  type Love {
+    range: [Int]
+    genre: String
+  }
+  type FriendShip {
+    range: [Int]
+    genre: String
+  }
   type UserConfigs {
-    maxDistance: String!
-    searchGenre: String!
+    maxDistance: String
+    love: Love
+    friendShip: FriendShip
   }
   type User {
     email: String
     configs: UserConfigs!
+    profileStatus: String
   }
   type Images {
     _id: String
@@ -33,23 +49,49 @@ export default gql`
   type Birthplace {
     placeId: String!
     description: String!
-    lat: String!
-    lng: String!
-    UTC: String!
+    lat: String
+    lng: String
+    UTC: String
+  }
+  type Graduation {
+    class: String
+    description: String
+    placeId: String
+  }
+  type Residence {
+    description: String
+    placeId: String
+  }
+  type Text {
+    text: String!
+    title: String!
+    subtitle: String!
+  }
+  type Astral {
+    indexes: String
+    zodiac: String
+    mandala: String
+    texts: [Text]!
   }
   type Profile {
     _id: String
     name: String
     birthday: String
     images: [Images]
-    birthplace: Birthplace!
+    birthplace: Birthplace
     loc: Loc
+    astral: Astral
     genre: String
+    eyes: String
+    occupation: String
+    graduation: Graduation
+    residence: Residence
+    sexualOrientations: [String]
   }
   type Message {
     _id: String
-    sender_id: String
-    receiver_id: String
+    senderId: String
+    receiverId: String
     sentAt: String
     text: String
     viewed: Boolean
@@ -57,32 +99,45 @@ export default gql`
   type Chat {
     _id: String
     startedAt: String
-    participants: [Profile]
+    participant: Profile
     messages: [Message]
   }
   type Match {
     _id: String
     startedAt: String
-    matches: [Profile]
+    profileMatched: Profile
     lastMessage: Message
+    unreadMessages: String
+    type: String!
   }
   type Mutation {
-    createProfile(
+    editProfile(
       name: String!
       birthday: String!
-      file: String!
-      filename: String
-      input: BirthplaceInput!
-      genre: String
-      searchGenre: String!
+      eyes: String
+      occupation: String
+      genre: String!
+      sexualOrientations: [String]!
+      birthplace: BirthplaceInput!
+      graduation: GraduationInput
+      residence: ResidenceInput
     ): Profile
     sendMessage(matchId: String!, message: String!): Chat
-    likeSomeone(userLikedId: String!): Match
-    unlikeSomeone(userUnlikedId: String!): String
+    likeSomeone(userLikedId: String!, type: String!): Profile
+    unlikeSomeone(userUnlikedId: String!, type: String!): String
     sendGeoLocation(latitude: String!, longitude: String!): String
-    saveConfigs(maxDistance: String, searchGenre: String): String
+    saveUserConfigs(
+      maxDistance: String
+      searchLoveAgeRange: [Int]!
+      searchFriendAgeRange: [Int]!
+      searchLoveGenre: String!
+      searchFriendGenre: String!
+      profileStatus: String!
+    ): String
+    addProfileImage(file: String!): String
+    removeProfileImage(imageId: String!): String
   }
   type Subscription {
-    updateChat: Chat
+    newMessage: Chat
   }
 `;

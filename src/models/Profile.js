@@ -29,6 +29,7 @@ export const profileSchema = mongoose.Schema({
   },
   images: [
     {
+      _id: mongoose.Schema.Types.ObjectId,
       image: {
         type: String,
         required: false
@@ -61,17 +62,62 @@ export const profileSchema = mongoose.Schema({
   },
   genre: {
     type: String,
-    required: true,
-    validate: value => {
-      if (value !== 'MALE' && value !== 'FEMALE') {
-        throw new Error('Undefined genre is not alowed');
-      }
-    },
-    default: ''
+    enum: ['WOMAN', 'MAN', 'HUMAN'],
+    required: true
   },
-  astralIndexes: {
+  sexualOrientations: [
+    {
+      type: String,
+      enum: [
+        'HETERO',
+        'GAY',
+        'LESBIAN',
+        'BISEXUAL',
+        'ASEXUAL',
+        'DEMISEXUAL',
+        'PANSEXUAL',
+        'QUEER',
+        'QUESTIONING',
+        'OTHER'
+      ],
+      required: true
+    }
+  ],
+  astral: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Astral'
+  },
+  eyes: {
     type: String,
     required: true
+  },
+  graduation: {
+    class: {
+      type: String,
+      required: true
+    },
+    description: {
+      type: String,
+      required: true
+    },
+    placeId: {
+      type: String,
+      required: true
+    }
+  },
+  occupation: {
+    type: String,
+    required: true
+  },
+  residence: {
+    description: {
+      type: String,
+      required: true
+    },
+    placeId: {
+      type: String,
+      required: true
+    }
   }
 });
 

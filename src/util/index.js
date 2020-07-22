@@ -8,7 +8,10 @@ export const prepare = o => {
   return o;
 };
 
-export const getServerDate = () => moment(Date.now()).subtract(CURRENT_SERVER_UTC, 'hours');
+export const getServerDate = () =>
+  moment(Date.now())
+    .subtract(CURRENT_SERVER_UTC, 'hours')
+    .toString();
 
 export const formatUtcOffset = offset => {
   const time = moment(offset, 'HH').format('HH:mm');
@@ -21,5 +24,5 @@ export const formatUtcOffset = offset => {
 
 export const datetimeToBrasiliaUtc = datetime =>
   moment(datetime, 'DD/MM/YYYY HH:mm')
-    .subtract(3, 'hours')
+    .utc()
     .format();
