@@ -25,12 +25,14 @@ export const getAstral = async ({ name, latitude, longitude, birthdate, birthpla
 export const getTexts = async ({ chartId }) => {
   try {
     const { data } = await api.get(`/textos/${chartId}`);
+    console.log('Success on using astrology api');
 
     return {
       chartId: data?._id,
       texts: data?.['const text']
     };
   } catch (error) {
+    console.log(`Error on using astrology api ${error?.message}`);
     throw new Error(error);
   }
 };

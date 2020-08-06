@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import User from '../models/User';
 import ERROR_MESSAGES from '../constants/errorMessages';
+import Profile from '../models/Profile';
 
 export const registerUser = async args => {
   try {
@@ -92,19 +93,24 @@ export const saveUserConfig = async ({
   searchFriendGenre,
   profileStatus
 }) => {
-  await User.findOneAndUpdate(
-    { _id: user._id },
-    {
-      $set: {
-        'configs.love.range': searchLoveAgeRange,
-        'configs.friendShip.range': searchFriendAgeRange,
-        'configs.love.genre': searchLoveGenre,
-        'configs.friendShip.genre': searchFriendGenre,
-        'configs.maxDistance': maxDistance || 100
-      },
-      profileStatus
-    }
-  );
+  try {
+    await Profile.findOne({ _id: user._id });
+    await User.findOneAndUpdate(
+      { _id: user._id },
+      {
+        $set: {
+          'configs.love.range': searchLoveAgeRange,
+          'configs.friendShip.range': searchFriendAgeRange,
+          'configs.love.genre': searchLoveGenre,
+          'configs.friendShip.genre': searchFriendGenre,
+          'configs.maxDistance': maxDistance || 100
+        },
+        profileStatus
+      }
+    );
+  } catch (error) {
+    throw new Error(error);
+  }
 
   return true;
 };

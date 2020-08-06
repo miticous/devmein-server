@@ -10,6 +10,7 @@ import { registerUser, login, logout, auth } from './services/user';
 import ERROR_MESSAGES from './constants/errorMessages';
 import User from './models/User';
 
+require('dotenv').config();
 require('./database');
 
 const pubsub = new PubSub();
@@ -128,13 +129,10 @@ apolloServer.applyMiddleware({ app });
 
 const httpServer = createServer(app);
 apolloServer.installSubscriptionHandlers(httpServer);
-if (process.env.NODE_ENV !== 'test') {
-  httpServer.listen({ port: 4000 }, () => {
-    console.log(`🚀 Server ready at http://localhost:${4000}${apolloServer.graphqlPath}`);
-    console.log(
-      `🚀 Subscriptions ready at ws://localhost:${4000}${apolloServer.subscriptionsPath}`
-    );
-  });
-}
+
+httpServer.listen({ port: 8080 }, () => {
+  console.log(`🚀 Server ready at http://localhost:${8080}${apolloServer.graphqlPath}`);
+  console.log(`🚀 Subscriptions ready at ws://localhost:${8080}${apolloServer.subscriptionsPath}`);
+});
 
 export { typeDefs, resolvers, context, ApolloServer, app };

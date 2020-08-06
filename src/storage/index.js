@@ -1,8 +1,8 @@
 import admin from 'firebase-admin';
-import credential from './Jintou-d3c43a5c474a.json';
+import { config } from './configs';
 
 admin.initializeApp({
-  credential: admin.credential.cert(credential),
+  credential: admin.credential.cert(config),
   storageBucket: 'jintou-d0ad5.appspot.com'
 });
 
