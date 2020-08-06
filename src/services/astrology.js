@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.ASTROLOGY_API_URL
+  baseURL: process.env.ASTROLOGY_API_URL,
+  maxContentLength: 13290129312
 });
 
 export const getAstral = async ({ name, latitude, longitude, birthdate, birthplaceFuso }) => {
@@ -16,8 +17,11 @@ export const getAstral = async ({ name, latitude, longitude, birthdate, birthpla
       placename: ''
     });
 
+    console.log('Success on using astrology api INDICES');
+
     return data;
   } catch (error) {
+    console.log(`Error on using astrology api INDICES ${error?.message}`);
     return false;
   }
 };
@@ -29,7 +33,7 @@ export const getTexts = async ({ chartId }) => {
 
     return {
       chartId: data?._id,
-      texts: data?.['const text']
+      texts: data?.texts
     };
   } catch (error) {
     console.log(`Error on using astrology api ${error?.message}`);

@@ -43,6 +43,7 @@ export const updateProfile = async args => {
     residence,
     sexualOrientations
   } = args;
+
   const { lat, lng, UTC, placeId } = await getCitieById(birthplace.placeId);
 
   const formattedBirthDate = datetimeToBrasiliaUtc(birthday);
