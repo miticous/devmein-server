@@ -66,6 +66,7 @@ export default gql`
     text: String!
     title: String!
     subtitle: String!
+    type: String!
   }
   type Astral {
     indexes: String

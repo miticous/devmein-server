@@ -64,7 +64,7 @@ app.post('/users', async (req, res) => {
     await registerUser(req.body);
     res.status(200).send();
   } catch (error) {
-    res.status(400).send({ error });
+    res.status(400).send(error.message);
   }
 });
 

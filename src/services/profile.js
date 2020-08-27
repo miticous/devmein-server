@@ -12,6 +12,7 @@ import { getUnlikesByUserId } from './unlike';
 import { getLikesByUserId } from './like';
 import { getCitieById } from './google-apis';
 import { updateAstral } from './astral';
+import { applyPlanMethods } from './plan';
 
 const uploadProfileImages = async ({ file, filename }) => {
   const tempPath = path.join(__dirname, './', filename);
@@ -85,7 +86,7 @@ export const updateProfile = async args => {
         }
       },
       { new: true, upsert: true }
-    );
+    ).populate({ path: 'astral', model: 'Astral' });
 
     return profile;
   } catch (error) {
@@ -147,9 +148,12 @@ export const getProfiles = async ({ user, searchType }) => {
     ]
   })
     .populate({ path: 'astral', model: 'Astral' })
+    .populate({ path: 'user', modal: 'User' })
     .exec();
 
-  return profiles;
+  const _profiles = applyPlanMethods({ mainUser: user, profiles });
+
+  return _profiles;
 };
 
 export const updateProfileLocation = async ({ latitude, longitude, userId }) => {

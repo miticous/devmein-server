@@ -9,19 +9,24 @@ import Profile from '../models/Profile';
 export const registerUser = async args => {
   try {
     const encryptedPassword = await bcrypt.hash(args.password.toString(), 8);
+    const user = await User.findOne({ email: args.email });
+    if (user) {
+      throw new Error('User already exists');
+    }
+
     const id = new mongoose.Types.ObjectId();
-    const user = new User({
+    const _user = new User({
       _id: id,
       email: args.email,
       password: encryptedPassword,
       token: jwt.sign({ _id: id }, process.env.JWT_KEY)
     });
 
-    const data = await user.save();
+    const data = await _user.save();
 
     return data;
   } catch (error) {
-    throw new Error('User already exists');
+    throw new Error(error.message);
   }
 };
 

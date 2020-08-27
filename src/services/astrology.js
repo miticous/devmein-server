@@ -16,7 +16,8 @@ export const getAstral = async ({ name, latitude, longitude, birthdate, birthpla
       horaverao: 'false',
       placename: ''
     });
-
+    console.log(name, latitude, longitude, birthdate, birthplaceFuso);
+    console.log(data);
     console.log('Success on using astrology api INDICES');
 
     return data;
@@ -29,6 +30,7 @@ export const getAstral = async ({ name, latitude, longitude, birthdate, birthpla
 export const getTexts = async ({ chartId }) => {
   try {
     const { data } = await api.get(`/textos/${chartId}`);
+
     console.log('Success on using astrology api');
 
     return {
