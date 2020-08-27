@@ -24,5 +24,5 @@ export const formatUtcOffset = offset => {
 
 export const datetimeToBrasiliaUtc = datetime =>
   moment(datetime, 'DD/MM/YYYY HH:mm')
-    .utc()
+    .utc(-3)
     .format();
