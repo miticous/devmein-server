@@ -77,11 +77,11 @@ export const updateProfile = async args => {
         genre,
         graduation: {
           ...graduation,
-          placeId: graduation.description.length === 0 ? null : graduation.placeId
+          placeId: graduation?.description?.length === 0 ? null : graduation?.placeId
         },
         residence: {
           ...residence,
-          placeId: residence.description.length === 0 ? null : residence.placeId
+          placeId: residence?.description?.length === 0 ? null : residence?.placeId
         }
       },
       { new: true, upsert: true }
