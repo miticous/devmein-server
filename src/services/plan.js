@@ -31,25 +31,39 @@ const getMainJupiterOtherTexts = ({ plan, profile }) => {
 
 export const applyPlanMethods = ({ profiles, mainUser }) => {
   if (mainUser?.plan === 'MERCURIO') {
-    const _profiles = profiles.map(profile => ({
-      ...profile.toObject(),
-      astral: {
-        ...profile?.astral,
-        texts: getMainMercurioOtherTexts({ plan: profile?.user?.plan, profile })
-      }
-    }));
+    const _profiles = profiles.map(profile => {
+      const _profile = { ...profile?.toObject() };
+
+      return {
+        ..._profile,
+        astral: {
+          ..._profile?.astral,
+          texts: getMainMercurioOtherTexts({
+            plan: _profile?.user?.plan,
+            profile: _profile
+          })
+        }
+      };
+    });
 
     return _profiles;
   }
 
   if (mainUser?.plan === 'JUPITER') {
-    const _profiles = profiles.map(profile => ({
-      ...profile.toObject(),
-      astral: {
-        ...profile?.astral,
-        texts: getMainJupiterOtherTexts({ plan: profile?.user?.plan, profile })
-      }
-    }));
+    const _profiles = profiles.map(profile => {
+      const _profile = { ...profile?.toObject() };
+
+      return {
+        ..._profile,
+        astral: {
+          ..._profile?.astral,
+          texts: getMainJupiterOtherTexts({
+            plan: _profile?.user?.plan,
+            profile: _profile
+          })
+        }
+      };
+    });
 
     return _profiles;
   }

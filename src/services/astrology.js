@@ -16,8 +16,7 @@ export const getAstral = async ({ name, latitude, longitude, birthdate, birthpla
       horaverao: 'false',
       placename: ''
     });
-    console.log(name, latitude, longitude, birthdate, birthplaceFuso);
-    console.log(data);
+
     console.log('Success on using astrology api INDICES');
 
     return data;

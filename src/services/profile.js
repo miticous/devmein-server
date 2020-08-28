@@ -42,7 +42,8 @@ export const updateProfile = async args => {
     genre,
     graduation,
     residence,
-    sexualOrientations
+    sexualOrientations,
+    shownTexts
   } = args;
 
   const { lat, lng, UTC, placeId } = await getCitieById(birthplace.placeId);
@@ -83,7 +84,8 @@ export const updateProfile = async args => {
         residence: {
           ...residence,
           placeId: residence?.description?.length === 0 ? null : residence?.placeId
-        }
+        },
+        shownTexts
       },
       { new: true, upsert: true }
     ).populate({ path: 'astral', model: 'Astral' });

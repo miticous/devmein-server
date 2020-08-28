@@ -56,7 +56,9 @@ const userSchema = mongoose.Schema({
   },
   plan: {
     type: String,
-    enum: TextTypes
+    enum: TextTypes,
+    default: 'MERCURIO',
+    required: true
   }
 });
 

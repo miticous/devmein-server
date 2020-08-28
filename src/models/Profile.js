@@ -127,7 +127,8 @@ export const profileSchema = mongoose.Schema({
   shownTexts: [
     {
       type: String,
-      enum: TextTypes
+      enum: TextTypes,
+      default: [...TextTypes]
     }
   ]
 });
