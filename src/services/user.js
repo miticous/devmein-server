@@ -96,7 +96,8 @@ export const saveUserConfig = async ({
   searchFriendAgeRange,
   searchLoveGenre,
   searchFriendGenre,
-  profileStatus
+  profileStatus,
+  plan
 }) => {
   try {
     await Profile.findOne({ _id: user._id });
@@ -110,7 +111,8 @@ export const saveUserConfig = async ({
           'configs.friendShip.genre': searchFriendGenre,
           'configs.maxDistance': maxDistance || 100
         },
-        profileStatus
+        profileStatus,
+        plan: plan || 'MERCURIO'
       }
     );
   } catch (error) {

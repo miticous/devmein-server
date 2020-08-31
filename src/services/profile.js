@@ -13,6 +13,7 @@ import { getLikesByUserId } from './like';
 import { getCitieById } from './google-apis';
 import { updateAstral } from './astral';
 import { applyPlanMethods } from './plan';
+import { TextTypes } from '../models/Astral';
 
 const uploadProfileImages = async ({ file, filename }) => {
   const tempPath = path.join(__dirname, './', filename);
@@ -85,7 +86,7 @@ export const updateProfile = async args => {
           ...residence,
           placeId: residence?.description?.length === 0 ? null : residence?.placeId
         },
-        shownTexts
+        shownTexts: shownTexts || TextTypes
       },
       { new: true, upsert: true }
     ).populate({ path: 'astral', model: 'Astral' });

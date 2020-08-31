@@ -89,7 +89,7 @@ export default gql`
     graduation: Graduation
     residence: Residence
     sexualOrientations: [String]
-    shownTexts: [String]!
+    shownTexts: [String]
   }
   type Message {
     _id: String
@@ -124,7 +124,7 @@ export default gql`
       birthplace: BirthplaceInput!
       graduation: GraduationInput
       residence: ResidenceInput
-      shownTexts: [String]!
+      shownTexts: [String]
     ): Profile
     sendMessage(matchId: String!, message: String!): Chat
     likeSomeone(userLikedId: String!, type: String!): Profile
