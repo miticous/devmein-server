@@ -22,7 +22,7 @@ export const getAstral = async ({ name, latitude, longitude, birthdate, birthpla
     return data;
   } catch (error) {
     console.log(`Error on using astrology api INDICES ${error?.message}`);
-    return false;
+    throw new Error(error.message);
   }
 };
 
