@@ -22,16 +22,20 @@ const context = async ({ req, connection }) => {
   const authorization = req.headers.authorization || '';
   const token = authorization.replace('Bearer ', '');
   const { _id: userId } = jwt.verify(token, process.env.JWT_KEY);
-  const user = await User.findById(userId);
+  try {
+    const user = await User.findById(userId);
 
-  if (!user) {
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return {
+      authorization: req.headers.authorization,
+      user,
+      pubsub
+    };
+  } catch (error) {
     throw new Error('User not found');
   }
-  return {
-    authorization: req.headers.authorization,
-    user,
-    pubsub
-  };
 };
 
 const apolloServer = new ApolloServer({
@@ -102,7 +106,7 @@ app.get('/users/auth', async (req, res) => {
 
     return res.status(200).send(hasProfile);
   } catch (error) {
-    return res.status(401);
+    return res.status(401).send();
   }
 });
 

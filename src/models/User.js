@@ -1,7 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import mongoose from 'mongoose';
 import validator from 'validator';
-import { TextTypes } from './Astral';
 
 const userSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
@@ -56,7 +55,7 @@ const userSchema = mongoose.Schema({
   },
   plan: {
     type: String,
-    enum: TextTypes,
+    enum: ['MERCURIO', 'JUPITER'],
     default: 'MERCURIO',
     required: true
   }

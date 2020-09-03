@@ -56,12 +56,16 @@ export const login = async args => {
 };
 
 export const auth = async ({ userId, token }) => {
-  const user = await User.findOne({ _id: userId, token });
+  try {
+    const user = await User.findOne({ _id: userId, token });
 
-  if (!user) {
-    throw ERROR_MESSAGES.AUTHENTICATION_FAILED;
+    if (!user) {
+      throw new Error(ERROR_MESSAGES.AUTHENTICATION_FAILED);
+    }
+    return user.profileStatus;
+  } catch (error) {
+    throw new Error(ERROR_MESSAGES.AUTHENTICATION_FAILED);
   }
-  return user.profileStatus;
 };
 
 export const logout = async token => {
