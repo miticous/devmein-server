@@ -26,7 +26,7 @@ jobs:
     - name: Publish app to Google App Engine
       run: |
         # This client-secret.json is converted by GCP_SA_KEY.
-        gcloud auth activate-service-account github@nifty-memory-284816.iam.gserviceaccount.com --key-file=jintou1-32abd731baf2.json
+        gcloud auth activate-service-account github@nifty-memory-284816.iam.gserviceaccount.com --key-file=jintou1-3fddb4079f69.json
         gcloud config set project nifty-memory-284816
         gcloud -q app deploy app.yaml
         
