@@ -13,7 +13,7 @@ jobs:
     - name: Install Node Packages
       run: yarn install
     - name: Generate server build
-      run: yarn build
+      run: yarn run build
 
     - name: Initialize Google Cloud SDK
       uses: zxyle/publish-gae-action@master
