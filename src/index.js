@@ -10,6 +10,7 @@ import { registerUser, login, logout, auth } from './services/user';
 import ERROR_MESSAGES from './constants/errorMessages';
 import User from './models/User';
 
+require('dotenv').config();
 require('./database');
 
 const pubsub = new PubSub();
@@ -21,16 +22,20 @@ const context = async ({ req, connection }) => {
   const authorization = req.headers.authorization || '';
   const token = authorization.replace('Bearer ', '');
   const { _id: userId } = jwt.verify(token, process.env.JWT_KEY);
-  const user = await User.findById(userId);
+  try {
+    const user = await User.findById(userId);
 
-  if (!user) {
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return {
+      authorization: req.headers.authorization,
+      user,
+      pubsub
+    };
+  } catch (error) {
     throw new Error('User not found');
   }
-  return {
-    authorization: req.headers.authorization,
-    user,
-    pubsub
-  };
 };
 
 const apolloServer = new ApolloServer({
@@ -63,7 +68,7 @@ app.post('/users', async (req, res) => {
     await registerUser(req.body);
     res.status(200).send();
   } catch (error) {
-    res.status(400).send({ error });
+    res.status(400).send(error.message);
   }
 });
 
@@ -101,7 +106,7 @@ app.get('/users/auth', async (req, res) => {
 
     return res.status(200).send(hasProfile);
   } catch (error) {
-    return res.status(401);
+    return res.status(401).send();
   }
 });
 
@@ -128,13 +133,10 @@ apolloServer.applyMiddleware({ app });
 
 const httpServer = createServer(app);
 apolloServer.installSubscriptionHandlers(httpServer);
-if (process.env.NODE_ENV !== 'test') {
-  httpServer.listen({ port: 4000 }, () => {
-    console.log(`🚀 Server ready at http://localhost:${4000}${apolloServer.graphqlPath}`);
-    console.log(
-      `🚀 Subscriptions ready at ws://localhost:${4000}${apolloServer.subscriptionsPath}`
-    );
-  });
-}
+
+httpServer.listen({ port: 8080 }, () => {
+  console.log(`🚀 Server ready at http://localhost:${8080}${apolloServer.graphqlPath}`);
+  console.log(`🚀 Subscriptions ready at ws://localhost:${8080}${apolloServer.subscriptionsPath}`);
+});
 
 export { typeDefs, resolvers, context, ApolloServer, app };

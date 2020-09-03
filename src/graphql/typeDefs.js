@@ -38,6 +38,7 @@ export default gql`
     email: String
     configs: UserConfigs!
     profileStatus: String
+    plan: String!
   }
   type Images {
     _id: String
@@ -66,6 +67,7 @@ export default gql`
     text: String!
     title: String!
     subtitle: String!
+    type: String!
   }
   type Astral {
     indexes: String
@@ -87,6 +89,7 @@ export default gql`
     graduation: Graduation
     residence: Residence
     sexualOrientations: [String]
+    shownTexts: [String]
   }
   type Message {
     _id: String
@@ -121,6 +124,7 @@ export default gql`
       birthplace: BirthplaceInput!
       graduation: GraduationInput
       residence: ResidenceInput
+      shownTexts: [String]
     ): Profile
     sendMessage(matchId: String!, message: String!): Chat
     likeSomeone(userLikedId: String!, type: String!): Profile

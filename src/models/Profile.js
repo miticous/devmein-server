@@ -4,6 +4,7 @@ import validator from 'validator';
 import moment from 'moment-timezone';
 import { AUTHORIZED_USER_AGE } from '../constants';
 import ERROR_MESSAGES from '../constants/errorMessages';
+import { TextTypes } from './Astral';
 
 const authorizedUserAge = () =>
   moment(Date.now(), 'America/Sao_Paulo')
@@ -118,7 +119,19 @@ export const profileSchema = mongoose.Schema({
       type: String,
       required: true
     }
-  }
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  shownTexts: [
+    {
+      type: String,
+      enum: TextTypes,
+      default: [...TextTypes],
+      required: true
+    }
+  ]
 });
 
 profileSchema.index({ loc: '2dsphere' });

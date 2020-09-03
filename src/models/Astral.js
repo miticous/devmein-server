@@ -1,5 +1,16 @@
 import mongoose from 'mongoose';
 
+export const TextTypes = [
+  'DATING',
+  'EMOTION',
+  'INSTINCT',
+  'INTELLECT',
+  'LOVE',
+  'MARRIAGE',
+  'PERSONALITY',
+  'SEX'
+];
+
 export const astralSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   chartId: {
@@ -30,6 +41,11 @@ export const astralSchema = mongoose.Schema({
       },
       subtitle: {
         type: String,
+        required: true
+      },
+      type: {
+        type: String,
+        enum: TextTypes,
         required: true
       }
     }

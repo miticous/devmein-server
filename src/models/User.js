@@ -52,6 +52,12 @@ const userSchema = mongoose.Schema({
         required: false
       }
     }
+  },
+  plan: {
+    type: String,
+    enum: ['MERCURIO', 'JUPITER'],
+    default: 'MERCURIO',
+    required: true
   }
 });
 

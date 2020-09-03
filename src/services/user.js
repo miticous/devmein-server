@@ -4,23 +4,29 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import User from '../models/User';
 import ERROR_MESSAGES from '../constants/errorMessages';
+import Profile from '../models/Profile';
 
 export const registerUser = async args => {
   try {
     const encryptedPassword = await bcrypt.hash(args.password.toString(), 8);
+    const user = await User.findOne({ email: args.email });
+    if (user) {
+      throw new Error('User already exists');
+    }
+
     const id = new mongoose.Types.ObjectId();
-    const user = new User({
+    const _user = new User({
       _id: id,
       email: args.email,
       password: encryptedPassword,
       token: jwt.sign({ _id: id }, process.env.JWT_KEY)
     });
 
-    const data = await user.save();
+    const data = await _user.save();
 
     return data;
   } catch (error) {
-    throw new Error('User already exists');
+    throw new Error(error.message);
   }
 };
 
@@ -50,12 +56,16 @@ export const login = async args => {
 };
 
 export const auth = async ({ userId, token }) => {
-  const user = await User.findOne({ _id: userId, token });
+  try {
+    const user = await User.findOne({ _id: userId, token });
 
-  if (!user) {
-    throw ERROR_MESSAGES.AUTHENTICATION_FAILED;
+    if (!user) {
+      throw new Error(ERROR_MESSAGES.AUTHENTICATION_FAILED);
+    }
+    return user.profileStatus;
+  } catch (error) {
+    throw new Error(ERROR_MESSAGES.AUTHENTICATION_FAILED);
   }
-  return user.profileStatus;
 };
 
 export const logout = async token => {
@@ -90,21 +100,28 @@ export const saveUserConfig = async ({
   searchFriendAgeRange,
   searchLoveGenre,
   searchFriendGenre,
-  profileStatus
+  profileStatus,
+  plan
 }) => {
-  await User.findOneAndUpdate(
-    { _id: user._id },
-    {
-      $set: {
-        'configs.love.range': searchLoveAgeRange,
-        'configs.friendShip.range': searchFriendAgeRange,
-        'configs.love.genre': searchLoveGenre,
-        'configs.friendShip.genre': searchFriendGenre,
-        'configs.maxDistance': maxDistance || 100
-      },
-      profileStatus
-    }
-  );
+  try {
+    await Profile.findOne({ _id: user._id });
+    await User.findOneAndUpdate(
+      { _id: user._id },
+      {
+        $set: {
+          'configs.love.range': searchLoveAgeRange,
+          'configs.friendShip.range': searchFriendAgeRange,
+          'configs.love.genre': searchLoveGenre,
+          'configs.friendShip.genre': searchFriendGenre,
+          'configs.maxDistance': maxDistance || 100
+        },
+        profileStatus,
+        plan: plan || 'MERCURIO'
+      }
+    );
+  } catch (error) {
+    throw new Error(error);
+  }
 
   return true;
 };

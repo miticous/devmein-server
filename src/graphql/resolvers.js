@@ -22,8 +22,8 @@ const resolvers = {
   },
   Query: {
     user: async (_, __, { user }) => {
-      const { configs, profileStatus } = user;
-      return { configs, profileStatus };
+      const { configs, profileStatus, plan } = user;
+      return { configs, profileStatus, plan };
     },
     profile: async (_, __, { user: { _id } }) => {
       const profile = await Profile.findById(_id).populate({ path: 'astral', model: 'Astral' });
@@ -31,6 +31,7 @@ const resolvers = {
       if (!profile) {
         return {};
       }
+
       return profile;
     },
     profiles: async (_, { searchType }, { user }) => {
