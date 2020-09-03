@@ -46,22 +46,21 @@ export const updateProfile = async args => {
     sexualOrientations,
     shownTexts
   } = args;
-
-  const { lat, lng, UTC, placeId } = await getCitieById(birthplace.placeId);
-
-  const formattedBirthDate = datetimeToBrasiliaUtc(birthday);
-
-  const { chart_id: chartId, zodiac, instinto, mandala } = await getAstral({
-    name,
-    birthdate: new Date(formattedBirthDate),
-    latitude: lat,
-    longitude: lng,
-    birthplaceFuso: formatUtcOffset(UTC)
-  });
-
-  const databaseChartId = await updateAstral({ chartId, zodiac, instinto, mandala });
-
   try {
+    const { lat, lng, UTC, placeId } = await getCitieById(birthplace.placeId);
+
+    const formattedBirthDate = datetimeToBrasiliaUtc(birthday);
+
+    const { chart_id: chartId, zodiac, instinto, mandala } = await getAstral({
+      name,
+      birthdate: new Date(formattedBirthDate),
+      latitude: lat,
+      longitude: lng,
+      birthplaceFuso: formatUtcOffset(UTC)
+    });
+
+    const databaseChartId = await updateAstral({ chartId, zodiac, instinto, mandala });
+
     const profile = await Profile.findOneAndUpdate(
       { _id: user._id },
       {
