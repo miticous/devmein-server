@@ -1,3 +1,4 @@
+import { withFilter } from 'apollo-server-express';
 import {
   updateProfile,
   getProfiles,
@@ -17,7 +18,11 @@ const NEW_MESSAGE = 'NEW_MESSAGE';
 const resolvers = {
   Subscription: {
     newMessage: {
-      subscribe: (_, __, { pubsub }) => pubsub.asyncIterator([NEW_MESSAGE])
+      subscribe: withFilter(
+        (_, __, { pubsub }) => pubsub.asyncIterator([NEW_MESSAGE]),
+        (payload, variables) =>
+          payload?.newMessage?._id.toString() === variables?.matchId.toString()
+      )
     }
   },
   Query: {
