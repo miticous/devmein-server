@@ -1,12 +1,1 @@
-{
-  "type": "service_account",
-  "project_id": "nifty-memory-284816",
-  "private_key_id": "3fddb4079f6931aabe97492bae11746d454505af",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQClORUgArdRIZXK\nxvSWuzSXR6Q2cMlxfGlopHrUkvbW99KA4Yzg9UXyBecvMcTIhJJMuVXznQRup2FB\n3ho2BOKbb5ychmnWMTFxgrNdDQzXQ+wua1HAja1iUYdN7LtxtALEt2PPAz60dAIA\nKttFsGAGayy+eiOWwPxS0Vj8KmYCkIoU1YdTcNfOE6PxaNtpnAssim5DO5eGXqhz\nLF2ez0AumQ0fZ3BMciK2p9vEe7YchTQvps9ZDFfHtAlN77/sMf9rm9gQZ3iPma/A\nqxxtVSefW4uW6RPV3KlDj+4nensVq7EPuVC6Zvf8kWdC5xRlx2ncbrqYU1f2cGfr\niGtjX2i5AgMBAAECggEAP3Phsg54+paMYXjxHCY/N04TObktFAF0tfRdG+BpHfvF\nAywcH5TyzNUJiS1y5pNLYF3ZLZsCxcBQcKxsooxTvuApZE+Wu+TemTpZygWmBdIX\nFWiv1+RRTy4CaaHeBvfcDFJl6W3UmhbnYcsTtPrclfp5D5n2qwHopaGyq/1YeekM\nmUOKTo/fbgzMMyQ100115FKv3iU4FQjNSvSBVS2pdtXt0EiLMBDls1tPs0KQarzv\n+6NjdZV6yhShn+CLbJ7oLv5s+BwFSotDKp4pHNDyewGsP7Lj6NIz5EOzfwy4QcKS\nks7iILpr/qeOaDt/y23Zx66YVMKeszdoNq0IQFuetQKBgQDVpf/cD/OQP9DBWeWX\n4sZGocBUe3AnWieC2AuYpeRSAjhkZo3Imfca1gaownGGLknrpnNR2eIj3E3BD28a\n0mwYkanYJgI/AkO+8dv0lbU3c+D6GbEwbod3BRhblOZDymuT/8nYmxCKuMNfwuSz\nzbl65ePwDiNIw1i4qHicFOF1XwKBgQDF+aPimBoj96IODd8PQGA8r+NlB2zSrboe\nYG6LxcGjhYOsC8Cb0jbIu1d/cv+5bCCrBKqDWwwiAJT7O4VHqnxycUbrdK8Ij8gG\nNZiw/dZm8zhXPBHxgQD90RHALDvVvzG1KL0KdcRpSYFZAR0jOK6q3xAoB732v+RV\n98BaUCGA5wKBgQC6K5CtHmlLRZCPK9rZY48LdV+3PmkYoYLUjZZtSgGPRMgHFSZv\nq1qcU+wxml56YlOfuMe8h3R7czl+Bgj3Am2XazbpVxWV+k82UGMu2lWzIJLm3QR+\nA5KfsBztkO6mG/lqWfZ1fYoIl8AH7jiERbxez3y0bl1oxnDFWGjg+YENWQKBgB8J\nLbn+Ikr1LUCKyCc57lxVLo7OBS9Z8M2GTI446ExcR/IWvZEv+Uqqo+LlAlXtL4nf\n52NESLij4rcn85LylSPTwkxzNGVhNPhUOqW0hYIKKxDx59Y2ZRNlTSUVSiQOHxrJ\nUilroOjojxCG7ixxXGCJK5066XrfRkp71nnSCg6NAoGAU9LhRH8+I+/Z5HQ7/7zO\nT67Yym/liMRBSKhEqYIHp2q9ILfGCB0ws5gr/qd6u/ZhGchgB8699vB1D72to8kl\n1+v9Y1Kz/7OEY9V/meOgVZLOdNIWuGtFFftjmaLSSqqaTgzDmYk+W3VwcRUofPFD\nqkXMkS0BkD+o45hD9H9wVZY=\n-----END PRIVATE KEY-----\n",
-  "client_email": "github@nifty-memory-284816.iam.gserviceaccount.com",
-  "client_id": "109992911760454910216",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/github%40nifty-memory-284816.iam.gserviceaccount.com"
-}
+
