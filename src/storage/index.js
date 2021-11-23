@@ -3,7 +3,7 @@ import { config } from './configs';
 
 admin.initializeApp({
   credential: admin.credential.cert(config),
-  storageBucket: 'jintou-d0ad5.appspot.com'
+  storageBucket: process.env.BUCKET_ID
 });
 
 export default admin.storage().bucket();

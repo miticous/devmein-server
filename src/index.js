@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import express from 'express';
 import { ApolloServer, PubSub } from 'apollo-server-express';
 import { createServer } from 'http';
@@ -55,7 +56,7 @@ const apolloServer = new ApolloServer({
         pubsub
       };
     },
-    onDisconnect: () => {}
+    onDisconnect: () => false
   }
 });
 
@@ -83,7 +84,7 @@ app.post('/users/login', async (req, res) => {
 
 app.post('/users/logout', async (req, res) => {
   try {
-    const authorization = req.headers.authorization;
+    const { authorization } = req.headers;
 
     if (!authorization) {
       throw ERROR_MESSAGES.LOGOUT_FAILED;
