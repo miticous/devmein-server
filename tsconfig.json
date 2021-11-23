@@ -1,10 +1,12 @@
 {
     "compilerOptions": {
-      "target": "esnext",
+      "target": "es5",
       "module": "commonjs",
-      "lib": ["ESNext", "ES2021"],
+      "lib": ["ESNext", "ES2021"],                        /* Specify library files to be included in the compilation. */
+      "outDir": "./dist",
+      "allowJs": true,                          /* Allow javascript files to be compiled. */
+      "noEmit": true,                           /* Do not emit outputs. */
       "strict": true,
-      "allowJs": true,
       "strictPropertyInitialization": false,
       "moduleResolution": "node",
       "allowSyntheticDefaultImports": true,
@@ -13,7 +15,14 @@
       "emitDecoratorMetadata": true,
       "skipLibCheck": true,
       "forceConsistentCasingInFileNames": true,
-      "resolveJsonModule": true
-    }
+      "resolveJsonModule": true,
+      "isolatedModules": true,                  /* Transpile each file as a separate module (similar to 'ts.transpileModule'). */
+      "baseUrl": "./",
+      "paths": {
+        "*": ["src/*"]
+      },
+    },
+    "include": [
+      "**/*.ts", "**/*.tsx", "**/*.js",
+    ],
 }
-  

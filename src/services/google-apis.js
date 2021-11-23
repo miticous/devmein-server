@@ -1,7 +1,7 @@
 import Axios from 'axios';
 
 export const getCitieById = async placeId => {
-  const key = 'AIzaSyAsceWUlXxulQJohZddfRPstfcNl7FcE2s';
+  const key = process.env.GOOGLE_API_MAPS_KEY;
 
   const {
     data: {
