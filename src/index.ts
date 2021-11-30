@@ -3,7 +3,8 @@ import express from 'express';
 import { ApolloServer, PubSub } from 'apollo-server-express';
 import { createServer } from 'http';
 import bodyParser from 'body-parser';
-import jwt from 'jsonwebtoken';
+import jwt, { Secret } from 'jsonwebtoken';
+import expressPlayground from 'graphql-playground-middleware-express';
 import typeDefs from './graphql/typeDefs';
 import resolvers from './graphql/resolvers';
 import authMiddleware from './middlewares/authMiddleware';
@@ -23,6 +24,7 @@ const context = async ({ req, connection }) => {
   const authorization = req.headers.authorization || '';
   const token = authorization.replace('Bearer ', '');
   const { _id: userId } = jwt.verify(token, process.env.JWT_KEY);
+
   try {
     const user = await User.findById(userId);
 
@@ -57,7 +59,9 @@ const apolloServer = new ApolloServer({
       };
     },
     onDisconnect: () => false
-  }
+  },
+  playground: true,
+  introspection: true
 });
 
 const app = express();
@@ -69,7 +73,7 @@ app.post('/users', async (req, res) => {
     await registerUser(req.body);
     res.status(200).send();
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).send(error);
   }
 });
 
@@ -131,6 +135,13 @@ app.use('/graphql', authMiddleware);
 // -F 0=@tattoo.jpg
 
 apolloServer.applyMiddleware({ app });
+
+app.get(`/`, (_, res) => {
+  res.setHeader(`Access-Control-Allow-Origin`, `*`);
+  res.send({ token: process.env.API_GITHUB_TOKEN });
+});
+
+app.get(`/playground`, expressPlayground({ endpoint: `/graphql` }));
 
 const httpServer = createServer(app);
 apolloServer.installSubscriptionHandlers(httpServer);

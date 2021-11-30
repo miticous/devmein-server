@@ -1,28 +1,44 @@
 {
     "compilerOptions": {
-      "target": "es5",
+      "target": "esnext",
       "module": "commonjs",
-      "lib": ["ESNext", "ES2021"],                        /* Specify library files to be included in the compilation. */
+      "lib": ["esnext"],                        /* Specify library files to be included in the compilation. */
       "outDir": "./dist",
       "allowJs": true,                          /* Allow javascript files to be compiled. */
       "noEmit": true,                           /* Do not emit outputs. */
       "strict": true,
+      "noImplicitAny": false,                 /* Raise error on expressions and declarations with an implied 'any' type. */
       "strictPropertyInitialization": false,
+      "strictNullChecks": false,              /* Enable strict null checks. */
       "moduleResolution": "node",
       "allowSyntheticDefaultImports": true,
       "esModuleInterop": true,
-      "experimentalDecorators": true,
-      "emitDecoratorMetadata": true,
       "skipLibCheck": true,
-      "forceConsistentCasingInFileNames": true,
+      // "forceConsistentCasingInFileNames": true,
       "resolveJsonModule": true,
       "isolatedModules": true,                  /* Transpile each file as a separate module (similar to 'ts.transpileModule'). */
-      "baseUrl": "./",
+      "baseUrl": "./src",
       "paths": {
-        "*": ["src/*"]
+        "types/*": ["@types/*"]
       },
     },
     "include": [
       "**/*.ts", "**/*.tsx", "**/*.js",
     ],
+    "exclude": [
+      "node_modules"
+    ],
+    "ts-node": {
+      // It is faster to skip typechecking.
+      // Remove if you want ts-node to do typechecking.
+      "transpileOnly": true,
+
+      "files": true,
+
+      "compilerOptions": {
+        // compilerOptions specified here will override those declared below,
+        // but *only* in ts-node.  Useful if you want ts-node and tsc to use
+        // different options with a single tsconfig.json.
+      }
+    },
 }

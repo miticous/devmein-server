@@ -2,32 +2,33 @@
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import User from '../models/User';
-import ERROR_MESSAGES from '../constants/errorMessages';
-import Profile from '../models/Profile';
+import { RegisterUserParams } from 'types/services/user';
+import { ApolloError } from 'apollo-server-errors';
+import User from 'models/User';
+import ERROR_MESSAGES from 'constants/errorMessages';
+import Profile from 'models/Profile';
+import github from 'services/github';
 
-export const registerUser = async args => {
-  try {
-    const encryptedPassword = await bcrypt.hash(args.password.toString(), 8);
-    const user = await User.findOne({ email: args.email });
-    if (user) {
-      throw new Error('User already exists');
-    }
+export const registerUser: RegisterUserParams = async args => {
+  const profileId = await github.getProfileId(args.nickname);
+  const user = await User.findOne({ email: args.email, githubId: profileId });
 
-    const id = new mongoose.Types.ObjectId();
-    const _user = new User({
-      _id: id,
-      email: args.email,
-      password: encryptedPassword,
-      token: jwt.sign({ _id: id }, process.env.JWT_KEY)
-    });
-
-    const data = await _user.save();
-
-    return data;
-  } catch (error) {
-    throw new Error(error.message);
+  if (user) {
+    throw new ApolloError('User already exists');
   }
+
+  const id = new mongoose.Types.ObjectId();
+
+  const _user = new User({
+    _id: id,
+    email: args.email,
+    githubId: profileId,
+    token: jwt.sign({ _id: id }, process.env.JWT_KEY)
+  });
+
+  const data = await _user.save();
+
+  return data;
 };
 
 export const login = async args => {

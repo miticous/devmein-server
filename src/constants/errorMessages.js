@@ -9,5 +9,6 @@ export default {
   PROFILE_ALREADY_EXISTS: 'User profile already has been created',
   IMAGE_UPLOAD_FAILED: 'The image upload was not possible, verify bucket configs',
   TEMP_IMAGE_SAVE_FAILED: 'An error occur during save a temp file to upload image',
-  TEMP_IMAGE_DELETE_FAILED: 'An error occur during delete a temp file to upload image'
+  TEMP_IMAGE_DELETE_FAILED: 'An error occur during delete a temp file to upload image',
+  GITHUB_USER_NOT_FOUND: 'User not found on GH databse'
 };

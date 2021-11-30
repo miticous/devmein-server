@@ -1,9 +1,16 @@
 /* eslint-disable no-underscore-dangle */
 import mongoose from 'mongoose';
+import { User } from 'types/models/user';
 import validator from 'validator';
 
-const userSchema = mongoose.Schema({
+const userSchema = new mongoose.Schema<User>({
   _id: mongoose.Schema.Types.ObjectId,
+  githubId: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true
+  },
   email: {
     type: String,
     required: true,
@@ -11,14 +18,9 @@ const userSchema = mongoose.Schema({
     lowercase: true,
     validate: value => {
       if (!validator.isEmail(value)) {
-        throw new Error({ error: 'Invalid Email address' });
+        throw new Error('Invalid Email address');
       }
     }
-  },
-  password: {
-    type: String,
-    required: true,
-    minLength: 7
   },
   token: {
     type: String,
@@ -52,15 +54,16 @@ const userSchema = mongoose.Schema({
         required: false
       }
     }
-  },
-  plan: {
-    type: String,
-    enum: ['MERCURIO', 'JUPITER'],
-    default: 'MERCURIO',
-    required: true
   }
+  // TODO
+  // plan: {
+  //   type: String,
+  //   enum: ['MERCURIO', 'JUPITER'],
+  //   default: 'MERCURIO',
+  //   required: true
+  // }
 });
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model<User>('User', userSchema);
 
 export default User;
